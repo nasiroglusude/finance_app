@@ -1,8 +1,8 @@
 <resources xmlns:tools="http://schemas.android.com/tools">
     <!-- Base application theme. -->
-    <style name="Base.Theme.FinanceApp" parent="Theme.Material3.DayNight.NoActionBar">
-
+    <style name="Theme.FinanceApp" parent="Theme.Material3.DayNight.NoActionBar">
     </style>
 
-    <style name="Theme.FinanceApp" parent="Base.Theme.FinanceApp" />
+
+
 </resources>

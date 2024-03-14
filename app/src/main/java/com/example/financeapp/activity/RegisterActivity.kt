@@ -39,11 +39,12 @@ class RegisterActivity : AppCompatActivity() {
         setupClickableSpan()
     }
 
+    // E-posta ve Doğum Tarihi alanlarını dinleyen fonksiyonlar
     private fun EditTextListener() {
         binding.email.setOnFocusChangeListener{_, focused->
-           if(!focused){
-               binding.emailContainer.helperText = validEmail()
-           }
+            if(!focused){
+                binding.emailContainer.helperText = validEmail()
+            }
         }
 
         binding.dateContainer.setOnFocusChangeListener{_, focused->
@@ -53,26 +54,34 @@ class RegisterActivity : AppCompatActivity() {
         }
     }
 
+    // Doğum Tarihi alanı için geçerlilik kontrolü yapan fonksiyon
     private fun validDate(): String? {
         val dateText = binding.dateOfBirth.text.toString()
         val dateRegex = Regex("""^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{2})$""")
         if (!dateRegex.matches(dateText)) {
-            return "Invalid Date"
+            return "Geçersiz Tarih"
         }
         return null
     }
 
 
+    // E-posta alanı için geçerlilik kontrolü yapan fonksiyon
     private fun validEmail(): String? {
         val emailText = binding.email.text.toString()
         if(!Patterns.EMAIL_ADDRESS.matcher(emailText).matches())
         {
-            return "Invalid Email Adress"
+            return "Geçersiz E-posta Adresi"
         }
         return null
     }
 
+    // Buton tıklama olaylarını ayarlayan fonksiyon
     private fun setupClickListener() {
+        binding.backButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
         binding.dateOfBirth.setOnClickListener {
             showDatePicker()
         }
@@ -90,7 +99,7 @@ class RegisterActivity : AppCompatActivity() {
             auth.createUserWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // User creation successful, update user profile
+                        // Kullanıcı başarıyla oluşturuldu, kullanıcı profilini güncelle
                         val user = auth.currentUser
                         val userProfileChangeRequest = UserProfileChangeRequest.Builder()
                             .setDisplayName("$firstName $lastName")
@@ -98,46 +107,46 @@ class RegisterActivity : AppCompatActivity() {
                         user?.updateProfile(userProfileChangeRequest)
                             ?.addOnCompleteListener { profileTask ->
                                 if (profileTask.isSuccessful) {
-                                    // Profile updated successfully
-                                    Log.d(TAG, "User profile updated.")
+                                    // Profil başarıyla güncellendi
+                                    Log.d(TAG, "Kullanıcı profili güncellendi.")
                                 } else {
-                                    // Failed to update profile
-                                    Log.e(TAG, "Failed to update user profile.", profileTask.exception)
+                                    // Profil güncelleme başarısız
+                                    Log.e(TAG, "Kullanıcı profilini güncelleme başarısız.", profileTask.exception)
                                 }
                             }
 
-                        // Create User object with current date as creation date
+                        // Mevcut tarihi oluşturma tarihi olarak ayarlayarak Yeni Kullanıcı nesnesini oluştur
                         val newUser = User(
-                            user?.uid ?: "", // If user is null, set id to empty string
+                            user?.uid ?: "", // Kullanıcı null ise, id'yi boş dize olarak ayarla
                             firstName,
                             lastName,
                             phoneNumber,
                             dateOfBirth,
                             email,
                             password,
-                            currentDateString // Set current date as creation date
+                            currentDateString // Mevcut tarihi oluşturma tarihi olarak ayarla
                         )
 
-                        // Now you can save the newUser object to Firebase Realtime Database or Firestore
-                        // For simplicity, let's assume we are using Firebase Realtime Database
+                        // Şimdi newUser nesnesini Firebase Realtime Database veya Firestore'a kaydedebilirsiniz
+                        // Basitlik için, Firebase Realtime Database kullandığımızı varsayalım
                         val databaseReference = FirebaseDatabase.getInstance().reference.child("users").child(user?.uid ?: "")
                         databaseReference.setValue(newUser)
                             .addOnCompleteListener { databaseTask ->
                                 if (databaseTask.isSuccessful) {
-                                    Log.d(TAG, "User information saved to database.")
+                                    Log.d(TAG, "Kullanıcı bilgileri veritabanına kaydedildi.")
                                 } else {
-                                    Log.e(TAG, "Failed to save user information to database.", databaseTask.exception)
+                                    Log.e(TAG, "Kullanıcı bilgilerini veritabanına kaydetme başarısız.", databaseTask.exception)
                                 }
                             }
 
-                        // Update UI after successful registration
+                        // Başarılı kayıt sonrası arayüzü güncelle
                         updateUI(user)
                     } else {
-                        // If user creation fails, display an error message
+                        // Kullanıcı oluşturma başarısız olursa, bir hata mesajı göster
                         Log.w(TAG, "createUserWithEmail:failure", task.exception)
                         Toast.makeText(
                             baseContext,
-                            "Authentication failed.",
+                            "Kimlik doğrulama başarısız oldu.",
                             Toast.LENGTH_SHORT
                         ).show()
                         updateUI(null)
@@ -145,18 +154,22 @@ class RegisterActivity : AppCompatActivity() {
                 }
         }
     }
+
+    // Kullanıcı arayüzünü güncelleyen fonksiyon
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
-            // User is signed in, you can navigate to the main activity or perform any other action
+            // Kullanıcı oturum açtı, ana etkinliğe yönlendirme veya başka bir işlem gerçekleştirme
             val intent = Intent(this, AppActivity::class.java)
             startActivity(intent)
-            finish() // Optional: Finish the current activity to prevent the user from navigating back
+            finish() // İsteğe bağlı: Kullanıcının geri dönmesini önlemek için geçerli etkinliği sonlandır
         } else {
-            // User registration failed or user is null, handle the UI accordingly
-            // For example, display an error message
-            Toast.makeText(this, "User registration failed", Toast.LENGTH_SHORT).show()
+            // Kullanıcı kaydı başarısız veya kullanıcı null, arayüzü buna göre işle
+            // Örneğin, bir hata mesajı göster
+            Toast.makeText(this, "Kullanıcı kaydı başarısız oldu", Toast.LENGTH_SHORT).show()
         }
     }
+
+    // Tıklanabilir metni ayarlayan fonksiyon
     private fun setupClickableSpan() {
         val spannableString =
             SpannableString(getString(R.string.do_you_have_an_account) + " " + getString(R.string.Login))
@@ -182,19 +195,21 @@ class RegisterActivity : AppCompatActivity() {
         binding.logInText.highlightColor = resources.getColor(android.R.color.transparent)
     }
 
+    // Tarih seçiciyi gösteren fonksiyon
     private fun showDatePicker() {
         val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
         val builder = MaterialDatePicker.Builder.datePicker()
         val picker = builder.build()
         picker.addOnPositiveButtonClickListener { selection ->
-            // Format the selected date
+            // Seçilen tarihi biçimlendir
             val formattedDate = dateFormat.format(Date(selection))
-            // Set the formatted date to the EditText
+            // Biçimlendirilmiş tarihi EditText'e ayarla
             binding.dateOfBirth.setText(formattedDate)
         }
         picker.show(supportFragmentManager, picker.toString())
     }
 
+    // Giriş ekranına yönlendiren fonksiyon
     private fun navigateToLoginActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)

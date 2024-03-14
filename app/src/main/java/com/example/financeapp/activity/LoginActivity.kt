@@ -29,28 +29,35 @@ class LoginActivity : AppCompatActivity() {
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        // Firebase authentication instance'ını başlat
         auth = Firebase.auth
 
+        // Giriş butonunun alfasını ayarla
         binding.btnLogin.alpha = 0.5f
 
+        // Metin değişikliği dinleyicilerini ayarla
         setupTextChangeListeners()
+
+        // Tıklanabilir metni ayarla
         setupClickListener()
+
+        // Kayıt olma metnini ayarla
         setupSignUpText()
     }
 
+    // Metin değişikliği dinleyicilerini ayarlayan fonksiyon
     private fun setupTextChangeListeners() {
-
         binding.email.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 updateLoginButtonState()
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Not needed
+                // Gerekli değil
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Not needed
+                // Gerekli değil
             }
         })
 
@@ -60,15 +67,16 @@ class LoginActivity : AppCompatActivity() {
             }
 
             override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
-                // Not needed
+                // Gerekli değil
             }
 
             override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
-                // Not needed
+                // Gerekli değil
             }
         })
     }
 
+    // Giriş butonunun durumunu güncelleyen fonksiyon
     private fun updateLoginButtonState() {
         val email = binding.email.text.toString().trim()
         val password = binding.password.text.toString().trim()
@@ -79,35 +87,44 @@ class LoginActivity : AppCompatActivity() {
 
     }
 
+    // Tıklama olaylarını ayarlayan fonksiyon
     private fun setupClickListener() {
+        // Geri düğmesine tıklanınca MainActivity'e yönlendir
+        binding.backButton.setOnClickListener {
+            val intent = Intent(this, MainActivity::class.java)
+            startActivity(intent)
+        }
+
+        // Giriş butonuna tıklanınca
         binding.btnLogin.setOnClickListener {
 
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
 
             if (email.isEmpty() || password.isEmpty()) {
-                // If email or password is empty, show a message and return
+                // Eğer e-posta veya şifre boşsa, bir mesaj göster ve çık
                 Toast.makeText(
                     baseContext,
-                    "Please enter both email and password.",
+                    "Lütfen hem e-posta hem de şifreyi girin.",
                     Toast.LENGTH_SHORT
                 ).show()
                 return@setOnClickListener
             }
 
+            // E-posta ve şifreyle oturum açmayı dene
             auth.signInWithEmailAndPassword(email, password)
                 .addOnCompleteListener(this) { task ->
                     if (task.isSuccessful) {
-                        // Sign in success, update UI with the signed-in user's information
+                        // Oturum açma başarılı, kullanıcının bilgileriyle arayüzü güncelle
                         Log.d(TAG, "signInWithEmail:success")
                         val user = auth.currentUser
                         updateUI(user)
                     } else {
-                        // If sign in fails, display a message to the user.
+                        // Oturum açma başarısız olursa, kullanıcıya bir mesaj göster
                         Log.w(TAG, "signInWithEmail:failure", task.exception)
                         Toast.makeText(
                             baseContext,
-                            "Authentication failed.",
+                            "Kimlik doğrulama başarısız oldu.",
                             Toast.LENGTH_SHORT,
                         ).show()
                         updateUI(null)
@@ -117,22 +134,21 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
-
-
+    // Kullanıcı arayüzünü güncelleyen fonksiyon
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
-            // User is signed in, you can navigate to the main activity or perform any other action
+            // Kullanıcı oturum açtı, ana etkinliğe yönlendirme veya başka bir işlem gerçekleştirme
             val intent = Intent(this, AppActivity::class.java)
             startActivity(intent)
-            finish() // Optional: Finish the current activity to prevent the user from navigating back
+            finish() // İsteğe bağlı: Kullanıcının geri dönmesini önlemek için geçerli etkinliği sonlandır
         } else {
-            // User sign-in failed or user is null, handle the UI accordingly
-            // For example, display an error message
-            Toast.makeText(this, "User sign-in failed", Toast.LENGTH_SHORT).show()
+            // Kullanıcı oturum açma başarısız veya kullanıcı null, arayüzü buna göre işle
+            // Örneğin, bir hata mesajı göster
+            Toast.makeText(this, "Kullanıcı oturum açma başarısız oldu", Toast.LENGTH_SHORT).show()
         }
     }
 
-
+    // Kayıt olma metnini ayarlayan fonksiyon
     private fun setupSignUpText() {
         val signUpText = findViewById<TextView>(R.id.sign_up_text)
 
@@ -145,6 +161,7 @@ class LoginActivity : AppCompatActivity() {
         }
     }
 
+    // Tıklanabilir metni oluşturan fonksiyon
     private fun createClickableSpan(): SpannableString {
         val spannableString = SpannableString(getString(R.string.new_member) + " " + getString(R.string.click_here_to_sign_up))
 
@@ -160,11 +177,13 @@ class LoginActivity : AppCompatActivity() {
             }
         }
 
+        // Tıklanabilir metni ayarla
         spannableString.setSpan(clickableSpan, getString(R.string.new_member).length + 1, spannableString.length, SpannableString.SPAN_EXCLUSIVE_EXCLUSIVE)
 
         return spannableString
     }
 
+    // Kayıt ekranına yönlendiren fonksiyon
     private fun navigateToRegisterActivity() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
