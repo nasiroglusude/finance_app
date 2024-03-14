@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.FinanceApp" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your dark theme here. -->
+        <item name="colorPrimary">#165504</item>
+        <item name="colorOutline">#009EFF</item>
+        <item name="colorOutlineVariant">#D000FF</item>
+    </style>
+</resources>

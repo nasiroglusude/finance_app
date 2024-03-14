@@ -1,0 +1,21 @@
+<resources>
+    <string name="app_name">finansuygulama</string>
+    <string name="login">LOGIN</string>
+    <string name="Login">Log in.</string>
+    <string name="email">Email</string>
+    <string name="password">Password</string>
+    <string name="new_member">New member?</string>
+    <string name="click_here_to_sign_up">Click here to sign up.</string>
+    <string name="welcome_back">Welcome\nBack</string>
+    <string name="create_account">Create Account</string>
+    <string name="login_to_continue">Log in to continue</string>
+    <string name="signup_to_get_started">Sign up to get started</string>
+    <string name="signup">SIGN UP</string>
+    <string name="first_name">First Name</string>
+    <string name="last_name">Last Name\n</string>
+    <string name="phone_number">Phone Number</string>
+    <string name="date_of_birth">Date of Birth</string>
+    <string name="do_you_have_an_account">Do you have an account?</string>
+    <string name="finance_app">FINANCE APP</string>
+    <string name="finance_text">Easiest way to manage your money.</string>
+</resources>
