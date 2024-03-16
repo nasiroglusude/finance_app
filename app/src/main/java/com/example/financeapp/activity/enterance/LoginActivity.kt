@@ -1,4 +1,4 @@
-package com.example.financeapp.activity
+package com.example.financeapp.activity.enterance
 
 import android.content.ContentValues.TAG
 import android.content.Intent
@@ -14,6 +14,7 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.databinding.ActivityLoginBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
@@ -28,6 +29,8 @@ class LoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
+
+        supportActionBar?.hide()
 
         // Firebase authentication instance'ını başlat
         auth = Firebase.auth
@@ -91,7 +94,7 @@ class LoginActivity : AppCompatActivity() {
     private fun setupClickListener() {
         // Geri düğmesine tıklanınca MainActivity'e yönlendir
         binding.backButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, IntroActivity::class.java)
             startActivity(intent)
         }
 
@@ -138,7 +141,7 @@ class LoginActivity : AppCompatActivity() {
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             // Kullanıcı oturum açtı, ana etkinliğe yönlendirme veya başka bir işlem gerçekleştirme
-            val intent = Intent(this, AppActivity::class.java)
+            val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
             finish() // İsteğe bağlı: Kullanıcının geri dönmesini önlemek için geçerli etkinliği sonlandır
         } else {

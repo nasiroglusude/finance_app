@@ -1,4 +1,4 @@
-package com.example.financeapp.activity
+package com.example.financeapp.activity.enterance
 
 import android.content.ContentValues.TAG
 import android.os.Bundle
@@ -14,6 +14,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import java.util.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.databinding.ActivityRegisterBinding
 import com.example.financeapp.data.User
 import com.google.firebase.Firebase
@@ -78,7 +79,7 @@ class RegisterActivity : AppCompatActivity() {
     // Buton tıklama olaylarını ayarlayan fonksiyon
     private fun setupClickListener() {
         binding.backButton.setOnClickListener {
-            val intent = Intent(this, MainActivity::class.java)
+            val intent = Intent(this, IntroActivity::class.java)
             startActivity(intent)
         }
 
@@ -159,7 +160,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             // Kullanıcı oturum açtı, ana etkinliğe yönlendirme veya başka bir işlem gerçekleştirme
-            val intent = Intent(this, AppActivity::class.java)
+            val intent = Intent(this, MenuActivity::class.java)
             startActivity(intent)
             finish() // İsteğe bağlı: Kullanıcının geri dönmesini önlemek için geçerli etkinliği sonlandır
         } else {

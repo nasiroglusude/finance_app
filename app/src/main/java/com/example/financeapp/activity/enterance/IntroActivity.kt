@@ -1,4 +1,4 @@
-package com.example.financeapp.activity
+package com.example.financeapp.activity.enterance
 
 import android.content.Intent
 import android.os.Bundle
@@ -7,10 +7,10 @@ import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
 import com.google.firebase.database.FirebaseDatabase
 
-class MainActivity : AppCompatActivity() {
+class IntroActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        setContentView(R.layout.activity_intro)
 
         FirebaseDatabase.getInstance("https://finansuygulama-c3e68-default-rtdb.europe-west1.firebasedatabase.app")
     }
