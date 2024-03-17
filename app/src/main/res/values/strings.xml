@@ -12,12 +12,13 @@
     <string name="signup_to_get_started">Sign up to get started</string>
     <string name="signup">SIGN UP</string>
     <string name="first_name">First Name</string>
-    <string name="last_name">Last Name\n</string>
+    <string name="last_name">Last Name</string>
     <string name="phone_number">Phone Number</string>
     <string name="date_of_birth">Date of Birth</string>
     <string name="do_you_have_an_account">Do you have an account?</string>
     <string name="finance_app">FINANCE APP</string>
     <string name="finance_text">Easiest way to manage your money.</string>
-    <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_child">Add New Child</string>
+    <string name="plus">+</string>
 </resources>

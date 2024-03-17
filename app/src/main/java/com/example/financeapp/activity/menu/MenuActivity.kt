@@ -1,5 +1,6 @@
 package com.example.financeapp.activity.menu
 
+import KidsFragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
@@ -8,7 +9,6 @@ import com.example.financeapp.R
 import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.activity.menu.navigation.ExchangeFragment
 import com.example.financeapp.activity.menu.navigation.HomeFragment
-import com.example.financeapp.activity.menu.navigation.KidsFragment
 import com.example.financeapp.activity.menu.navigation.ProfileFragment
 
 class MenuActivity: AppCompatActivity() {
