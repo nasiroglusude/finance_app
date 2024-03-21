@@ -1,0 +1,32 @@
+<resources>
+    <string name="app_name">finansuygulama</string>
+    <string name="login">GİRİŞ YAP</string>
+    <string name="child_login">ÇOCUK GİRİŞİ</string>
+    <string name="Login">Giriş yap.</string>
+    <string name="email">E-posta</string>
+    <string name="password">Şifre</string>
+    <string name="new_member">Yeni kullanıcı mısın?</string>
+    <string name="click_here_to_sign_up">Hesap oluştur.</string>
+    <string name="welcome_back">Tekrar\nHoşgeldiniz</string>
+    <string name="welcome_child_login">Çocuk\nGirişi</string>
+    <string name="create_account">Hesap Oluştur</string>
+    <string name="login_to_continue">Devam etmek için giriş yap</string>
+    <string name="login_as_child">Çocuk olarak giriş yap</string>
+    <string name="signup_to_get_started">Başlamak için kayıt ol</string>
+    <string name="signup">KAYIT OL</string>
+    <string name="first_name">İsim</string>
+    <string name="last_name">Soy isim</string>
+    <string name="phone_number">Telefon Numarası</string>
+    <string name="date_of_birth">Doğum Tarihi</string>
+    <string name="do_you_have_an_account">Hesabın var mı?</string>
+    <string name="finance_app">FINANCE APP</string>
+    <string name="finance_text">Paranızı yönetmenin en kolay yolu</string>
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="add_child">Yeni Çocuk Ekle</string>
+    <string name="plus">+</string>
+    <string name="parent_email">Ebeveyn E-postası</string>
+    <string name="delete">Sil</string>
+    <string name="available_balance">Mevcut Bakiye</string>
+    <string name="select_language">Dil Seç</string>
+
+</resources>

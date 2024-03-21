@@ -15,20 +15,21 @@ class ControlledChildActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_controlled_child)
 
+        // ViewBinding'i başlat
         binding = ActivityControlledChildBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        // Initialize FirebaseAuth instance
+        // FirebaseAuth örneğini başlat
         auth = FirebaseAuth.getInstance()
 
-        // Get the current user from FirebaseAuth
+        // FirebaseAuth'ten geçerli kullanıcıyı al
         val currentUser = auth.currentUser
 
-        // Check if the current user is not null
+        // Geçerli kullanıcının null olmadığını kontrol et
         currentUser?.let { user ->
-            // Get the full name of the user
+            // Kullanıcının tam adını al
             val fullName = "${user.displayName}"
-            // Set the full name to the TextView
+            // Tam adı TextView'e ayarla
             binding.textViewFullName.text = fullName
         }
     }

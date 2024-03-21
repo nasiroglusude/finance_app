@@ -22,8 +22,10 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
     private lateinit var adapter: KidsAdapter
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
+
+    // ChildAdapter sınıfındaki arayüz metodunu uygulama
     override fun onDeleteChildClick(position: Int) {
-        // Handle the delete action here
+        // Silme işlemini burada ele al
     }
 
     override fun onCreateView(
@@ -33,19 +35,19 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         binding = FragmentKidsBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Initialize Firebase components
+        // Firebase bileşenlerini başlat
         databaseReference = FirebaseDatabase.getInstance().reference.child("users")
         auth = FirebaseAuth.getInstance()
 
-        // Initialize RecyclerView
+        // RecyclerView'ı başlat
         adapter = KidsAdapter(mutableListOf(), this)
         binding.childrenList.layoutManager = LinearLayoutManager(requireContext())
         binding.childrenList.adapter = adapter
 
-        // Fetch children data from Firebase
+        // Firebase'den çocuk verilerini al
         fetchChildrenData()
 
-        // Set click listener for "Add Children" button
+        // "Çocuk Ekle" düğmesi için tıklama dinleyicisini ayarla
         binding.btnAddChildren.setOnClickListener {
             showAddChildDialog()
         }
@@ -53,6 +55,7 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         return view
     }
 
+    // Çocuk ekleme iletişim kutusunu gösteren fonksiyon
     private fun showAddChildDialog() {
         val dialogBinding = DialogAddChildBinding.inflate(layoutInflater)
         val dialogView = dialogBinding.root
@@ -64,41 +67,37 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
                 val lastName = dialogBinding.editTextLastName.text.toString()
                 val email = auth.currentUser?.email ?: ""
 
-                // Generate a random password
+                // Rastgele bir şifre oluştur
                 val password = generateRandomPassword(8)
 
-                // Get the current date
+                // Geçerli tarihi al
                 val currentDateString =
                     SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
 
-                // Create a Child object
+                // Bir Çocuk nesnesi oluştur
                 val newChild = Child(
-                    UUID.randomUUID().toString(), // Generate a unique ID for the child
+                    UUID.randomUUID().toString(), // Çocuk için benzersiz bir kimlik oluştur
                     firstName,
                     lastName,
-                    "", // Date of birth (if needed)
+                    "", // Doğum tarihi (gerekiyorsa)
                     email,
                     password,
                     currentDateString,
                     children = true
                 )
 
-                // Add the new child to the Firebase Realtime Database
-                // Add the new child as a user to the Firebase Realtime Database
-                // Add the new child to the "child" node in the Firebase Realtime Database
+                // Yeni çocuğu Firebase Gerçek Zamanlı Veritabanına ekle
                 databaseReference.child("child").child(newChild.id).setValue(newChild)
                     .addOnCompleteListener { task ->
                         if (task.isSuccessful) {
-                            // Child added successfully to the "child" node
-                            fetchChildrenData() // Refresh the UI
+                            // Çocuk başarıyla "child" düğümüne eklendi
+                            fetchChildrenData() // Arayüzü yenile
                         } else {
-                            // Failed to add child to the "child" node
+                            // Çocuğun "child" düğümüne eklenmesi başarısız oldu
                             Log.e(TAG, "Failed to add child to the 'child' node: ${task.exception}")
-                            // You can handle the error here
+                            // Hatası burada ele alabilirsiniz
                         }
                     }
-
-
             }
             .setNegativeButton("Cancel") { dialog, _ ->
                 dialog.dismiss()
@@ -108,6 +107,7 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         dialogBuilder.show()
     }
 
+    // Çocuk verilerini Firebase'den almak için fonksiyon
     private fun fetchChildrenData() {
         val query: Query = databaseReference.child("child").orderByChild("children").equalTo(true)
         query.addListenerForSingleValueEvent(object : ValueEventListener {
@@ -119,19 +119,21 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
                 }
                 adapter.updateData(kidsList)
 
-                // Print fetched data
-                println("Fetched ${kidsList.size} users")
+                // Alınan verileri yazdır
+                println("Alınan ${kidsList.size} kullanıcılar")
                 kidsList.forEachIndexed { index, user ->
-                    println("User ${index + 1}: $user")
+                    println("Kullanıcı ${index + 1}: $user")
                 }
             }
 
             override fun onCancelled(error: DatabaseError) {
-                // Handle onCancelled
-                println("Fetch cancelled: ${error.message}")
+                // onCancelled'ı ele al
+                println("Alma işlemi iptal edildi: ${error.message}")
             }
         })
     }
+
+    // Rastgele bir şifre oluşturmak için fonksiyon
     private fun generateRandomPassword(length: Int): String {
         val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
         return (1..length)
