@@ -1,102 +1,145 @@
+import android.app.AlertDialog
+import android.content.ContentValues.TAG
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ArrayAdapter
-import androidx.core.content.ContextCompat
 import androidx.fragment.app.Fragment
-import androidx.fragment.app.viewModels
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.recyclerview.widget.RecyclerView
-import com.example.financeapp.R
-import com.example.financeapp.adapter.KidsAdapter
+import com.example.financeapp.data.Child
+import com.example.financeapp.data.User
 import com.example.financeapp.databinding.DialogAddChildBinding
 import com.example.financeapp.databinding.FragmentKidsBinding
-import com.example.financeapp.databinding.KidsCardViewBinding
-import com.example.financeapp.viewmodel.KidsViewModel
-import com.google.android.material.datepicker.MaterialDatePicker
-import com.google.android.material.dialog.MaterialAlertDialogBuilder
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.*
 import java.text.SimpleDateFormat
-import java.util.Date
-import java.util.Locale
+import java.util.*
 
-class KidsFragment : Fragment() {
+class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
 
-    private lateinit var recyclerView: RecyclerView
+    private lateinit var binding: FragmentKidsBinding
     private lateinit var adapter: KidsAdapter
-    private lateinit var kidsCardViewBinding: KidsCardViewBinding
-
-    private val viewModel: KidsViewModel by viewModels()
-
+    private lateinit var databaseReference: DatabaseReference
+    private lateinit var auth: FirebaseAuth
+    override fun onDeleteChildClick(position: Int) {
+        // Handle the delete action here
+    }
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-        val binding = FragmentKidsBinding.inflate(inflater, container, false)
+    ): View {
+        binding = FragmentKidsBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        // Initialize Firebase components
+        databaseReference = FirebaseDatabase.getInstance().reference.child("users")
+        auth = FirebaseAuth.getInstance()
 
+        // Initialize RecyclerView
+        adapter = KidsAdapter(mutableListOf(), this)
+        binding.childrenList.layoutManager = LinearLayoutManager(requireContext())
+        binding.childrenList.adapter = adapter
 
-        recyclerView = view.findViewById(R.id.recyclerView)
-        adapter = KidsAdapter(mutableListOf())
-        recyclerView.adapter = adapter
-        recyclerView.layoutManager = LinearLayoutManager(requireContext())
+        // Fetch children data from Firebase
+        fetchChildrenData()
 
-        binding.btnAddCard.setOnClickListener {
+        // Set click listener for "Add Children" button
+        binding.btnAddChildren.setOnClickListener {
             showAddChildDialog()
         }
-
 
         return view
     }
 
-    private fun showDatePicker(dialogBinding: DialogAddChildBinding) {
-        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
-        val builder = MaterialDatePicker.Builder.datePicker()
-        val picker = builder.build()
-        picker.addOnPositiveButtonClickListener { selection ->
-            // Seçilen tarihi biçimlendir
-            val formattedDate = dateFormat.format(Date(selection))
-
-            // Diyalogun içerisindeki editText'e tarih ataması yapılmalı
-            dialogBinding.dateOfBirth.setText(formattedDate)
-        }
-        picker.show(childFragmentManager, picker.toString())
-    }
-
-
     private fun showAddChildDialog() {
         val dialogBinding = DialogAddChildBinding.inflate(layoutInflater)
-        val autoCompleteTextViewSexuality = dialogBinding.autoCompleteTextView
+        val dialogView = dialogBinding.root
 
-        // Set up adapter for MaterialAutoCompleteTextView
-        val sexualityAdapter = ArrayAdapter(
-            requireContext(),
-            android.R.layout.simple_dropdown_item_1line,
-            resources.getStringArray(R.array.sexuality_options)
-        )
-        autoCompleteTextViewSexuality.setAdapter(sexualityAdapter)
-
-        val dialog = MaterialAlertDialogBuilder(requireContext())
-            .setView(dialogBinding.root)
-            .setPositiveButton("Add") { _, _ ->
+        val dialogBuilder = AlertDialog.Builder(requireContext())
+            .setView(dialogView)
+            .setPositiveButton("Add") { dialog, _ ->
                 val firstName = dialogBinding.editTextFirstName.text.toString()
                 val lastName = dialogBinding.editTextLastName.text.toString()
-                val sexuality = autoCompleteTextViewSexuality.text.toString()
-                val dateOfBirth = dialogBinding.dateOfBirth.text.toString()
+                val email = auth.currentUser?.email ?: ""
 
-                // Create a new item with retrieved data and add it to the RecyclerView
-                val newItem = "$firstName"
-                adapter.addItem(newItem)
+                // Generate a random password
+                val password = generateRandomPassword(8)
+
+                // Get the current date
+                val currentDateString =
+                    SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+
+                // Create a Child object
+                val newChild = Child(
+                    UUID.randomUUID().toString(), // Generate a unique ID for the child
+                    firstName,
+                    lastName,
+                    "", // Date of birth (if needed)
+                    email,
+                    password,
+                    currentDateString,
+                    children = true
+                )
+
+                // Add the new child to the Firebase Realtime Database
+                // Add the new child as a user to the Firebase Realtime Database
+                // Add the new child to the "child" node in the Firebase Realtime Database
+                databaseReference.child("child").child(newChild.id).setValue(newChild)
+                    .addOnCompleteListener { task ->
+                        if (task.isSuccessful) {
+                            // Child added successfully to the "child" node
+                            fetchChildrenData() // Refresh the UI
+                        } else {
+                            // Failed to add child to the "child" node
+                            Log.e(TAG, "Failed to add child to the 'child' node: ${task.exception}")
+                            // You can handle the error here
+                        }
+                    }
+
+
             }
-            .setNegativeButton("Cancel", null)
-            .show()
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .create()
 
-        dialogBinding.dateOfBirth.setOnClickListener {
-            showDatePicker(dialogBinding)
-        }
+        dialogBuilder.show()
     }
 
+    private fun fetchChildrenData() {
+        val query: Query = databaseReference.child("child").orderByChild("children").equalTo(true)
+        query.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                val kidsList: MutableList<User> = mutableListOf()
+                for (childSnapshot in snapshot.children) {
+                    val user: User? = childSnapshot.getValue(User::class.java)
+                    user?.let { kidsList.add(it) }
+                }
+                adapter.updateData(kidsList)
+
+                // Print fetched data
+                println("Fetched ${kidsList.size} users")
+                kidsList.forEachIndexed { index, user ->
+                    println("User ${index + 1}: $user")
+                }
+            }
+
+            override fun onCancelled(error: DatabaseError) {
+                // Handle onCancelled
+                println("Fetch cancelled: ${error.message}")
+            }
+        })
+    }
+    private fun generateRandomPassword(length: Int): String {
+        val allowedChars = ('A'..'Z') + ('a'..'z') + ('0'..'9')
+        return (1..length)
+            .map { allowedChars.random() }
+            .joinToString("")
+    }
 
 }
+
+
+

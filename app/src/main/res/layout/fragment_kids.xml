@@ -3,6 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@drawable/child_background"
     >
 
     <com.google.android.material.appbar.AppBarLayout
@@ -39,28 +40,23 @@
             android:orientation="vertical"
             android:padding="20dp">
 
-            <!-- Your other content here -->
-
             <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/recyclerView"
+                android:id="@+id/childrenList"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginTop="20dp"
+                android:layout_marginTop="20dp"/>
 
-                />
-
-
-            <com.google.android.material.button.MaterialButton
-                android:id="@+id/btnAddCard"
+            <androidx.appcompat.widget.AppCompatButton
+                android:id="@+id/btnAddChildren"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_gravity="start"
+                android:layout_marginLeft="5dp"
+                android:layout_marginTop="10dp"
+                android:background="@drawable/plus_button_white"
                 android:fontFamily="@font/kanit"
-                android:textColor="@color/black"
-                android:layout_gravity="left"
-                android:text="@string/plus"
-                android:backgroundTint="@color/white"
-                android:textSize="50dp"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                app:shapeAppearanceOverlay="@style/CircularShapeAppearance" />
+                android:padding="30dp"
+                android:elevation="4dp"/>
 
 
         </LinearLayout>

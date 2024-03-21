@@ -1,12 +1,19 @@
 package com.example.financeapp.data
 
+import com.google.firebase.database.IgnoreExtraProperties
+
+@IgnoreExtraProperties
 data class User(
-    val id: String,
-    val firstName: String,
-    val lastName: String,
-    val phoneNumber: String,
-    val dateOfBirth: String,
-    val email: String,
-    val password: String,
-    val creationDate: String
-)
+    var id: String = "", // Include default values for properties
+    var firstName: String = "",
+    var lastName: String = "",
+    var phoneNumber: String = "",
+    var dateOfBirth: String = "",
+    var email: String = "",
+    var password: String = "",
+    var creationDate: String? = null,
+    var children: Boolean = false
+) {
+    // Add a no-argument constructor
+    constructor() : this("", "", "", "", "", "", "", null, false)
+}

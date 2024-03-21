@@ -24,6 +24,12 @@ class IntroActivity : AppCompatActivity() {
         val intent = Intent(this, RegisterActivity::class.java)
         startActivity(intent)
     }
+
+    fun childLoginPage(view: View) {
+        val intent = Intent(this, ChildLoginActivity::class.java)
+        startActivity(intent)
+    }
+
 }
 
 

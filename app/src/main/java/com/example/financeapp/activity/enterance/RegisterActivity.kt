@@ -87,74 +87,72 @@ class RegisterActivity : AppCompatActivity() {
             showDatePicker()
         }
 
-        binding.btnSignup.setOnClickListener{
-            val firstName = binding.firstName.text.toString()
-            val lastName = binding.lastName.text.toString()
-            val phoneNumber = binding.phoneNumber.text.toString()
-            val dateOfBirth = binding.dateOfBirth.text.toString()
-            val email = binding.email.text.toString()
-            val password = binding.password.text.toString()
-            val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
-
-            auth = Firebase.auth
-            auth.createUserWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Kullanıcı başarıyla oluşturuldu, kullanıcı profilini güncelle
-                        val user = auth.currentUser
-                        val userProfileChangeRequest = UserProfileChangeRequest.Builder()
-                            .setDisplayName("$firstName $lastName")
-                            .build()
-                        user?.updateProfile(userProfileChangeRequest)
-                            ?.addOnCompleteListener { profileTask ->
-                                if (profileTask.isSuccessful) {
-                                    // Profil başarıyla güncellendi
-                                    Log.d(TAG, "Kullanıcı profili güncellendi.")
-                                } else {
-                                    // Profil güncelleme başarısız
-                                    Log.e(TAG, "Kullanıcı profilini güncelleme başarısız.", profileTask.exception)
-                                }
-                            }
-
-                        // Mevcut tarihi oluşturma tarihi olarak ayarlayarak Yeni Kullanıcı nesnesini oluştur
-                        val newUser = User(
-                            user?.uid ?: "", // Kullanıcı null ise, id'yi boş dize olarak ayarla
-                            firstName,
-                            lastName,
-                            phoneNumber,
-                            dateOfBirth,
-                            email,
-                            password,
-                            currentDateString // Mevcut tarihi oluşturma tarihi olarak ayarla
-                        )
-
-                        // Şimdi newUser nesnesini Firebase Realtime Database veya Firestore'a kaydedebilirsiniz
-                        // Basitlik için, Firebase Realtime Database kullandığımızı varsayalım
-                        val databaseReference = FirebaseDatabase.getInstance().reference.child("users").child(user?.uid ?: "")
-                        databaseReference.setValue(newUser)
-                            .addOnCompleteListener { databaseTask ->
-                                if (databaseTask.isSuccessful) {
-                                    Log.d(TAG, "Kullanıcı bilgileri veritabanına kaydedildi.")
-                                } else {
-                                    Log.e(TAG, "Kullanıcı bilgilerini veritabanına kaydetme başarısız.", databaseTask.exception)
-                                }
-                            }
-
-                        // Başarılı kayıt sonrası arayüzü güncelle
-                        updateUI(user)
-                    } else {
-                        // Kullanıcı oluşturma başarısız olursa, bir hata mesajı göster
-                        Log.w(TAG, "createUserWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            baseContext,
-                            "Kimlik doğrulama başarısız oldu.",
-                            Toast.LENGTH_SHORT
-                        ).show()
-                        updateUI(null)
-                    }
-                }
+        binding.btnSignup.setOnClickListener {
+            signupWithEmailAndPassword()
         }
     }
+
+    private fun signupWithEmailAndPassword() {
+        val firstName = binding.firstName.text.toString()
+        val lastName = binding.lastName.text.toString()
+        val phoneNumber = binding.phoneNumber.text.toString()
+        val dateOfBirth = binding.dateOfBirth.text.toString()
+        val email = binding.email.text.toString()
+        val password = binding.password.text.toString()
+        val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+
+        auth = Firebase.auth
+        auth.createUserWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    val user = auth.currentUser
+                    val userProfileChangeRequest = UserProfileChangeRequest.Builder()
+                        .setDisplayName("$firstName $lastName")
+                        .build()
+                    user?.updateProfile(userProfileChangeRequest)
+                        ?.addOnCompleteListener { profileTask ->
+                            if (profileTask.isSuccessful) {
+                                Log.d(TAG, "Kullanıcı profili güncellendi.")
+                            } else {
+                                Log.e(TAG, "Kullanıcı profilini güncelleme başarısız.", profileTask.exception)
+                            }
+                        }
+
+                    val newUser = User(
+                        user?.uid ?: "",
+                        firstName,
+                        lastName,
+                        phoneNumber,
+                        dateOfBirth,
+                        email,
+                        password,
+                        currentDateString,
+                        children = false
+                    )
+
+                    val databaseReference = FirebaseDatabase.getInstance().reference.child("users").child(user?.uid ?: "")
+                    databaseReference.setValue(newUser)
+                        .addOnCompleteListener { databaseTask ->
+                            if (databaseTask.isSuccessful) {
+                                Log.d(TAG, "Kullanıcı bilgileri veritabanına kaydedildi.")
+                            } else {
+                                Log.e(TAG, "Kullanıcı bilgilerini veritabanına kaydetme başarısız.", databaseTask.exception)
+                            }
+                        }
+
+                    updateUI(user)
+                } else {
+                    Log.w(TAG, "createUserWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext,
+                        "Kimlik doğrulama başarısız oldu.",
+                        Toast.LENGTH_SHORT
+                    ).show()
+                    updateUI(null)
+                }
+            }
+    }
+
 
     // Kullanıcı arayüzünü güncelleyen fonksiyon
     private fun updateUI(user: FirebaseUser?) {
@@ -181,7 +179,7 @@ class RegisterActivity : AppCompatActivity() {
 
             override fun updateDrawState(ds: android.text.TextPaint) {
                 super.updateDrawState(ds)
-                ds.isUnderlineText = false
+                ds.isUnderlineText = true
                 ds.color = resources.getColor(R.color.purple_500)
             }
         }

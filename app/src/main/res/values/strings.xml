@@ -1,14 +1,17 @@
 <resources>
     <string name="app_name">finansuygulama</string>
     <string name="login">LOGIN</string>
+    <string name="child_login">CHILD LOGIN</string>
     <string name="Login">Log in.</string>
     <string name="email">Email</string>
     <string name="password">Password</string>
     <string name="new_member">New member?</string>
     <string name="click_here_to_sign_up">Click here to sign up.</string>
     <string name="welcome_back">Welcome\nBack</string>
+    <string name="welcome_child_login">Child\nLogin</string>
     <string name="create_account">Create Account</string>
     <string name="login_to_continue">Log in to continue</string>
+    <string name="login_as_child">Log in as child</string>
     <string name="signup_to_get_started">Sign up to get started</string>
     <string name="signup">SIGN UP</string>
     <string name="first_name">First Name</string>
@@ -21,4 +24,7 @@
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="add_child">Add New Child</string>
     <string name="plus">+</string>
+    <string name="parent_email">Parent E-mail</string>
+    <string name="delete">Delete</string>
+    <string name="available_balance">Available Balance</string>
 </resources>
