@@ -28,4 +28,11 @@
     <string name="delete">Delete</string>
     <string name="available_balance">Available Balance</string>
     <string name="select_language">Select Language</string>
+    <string name="debts">Debts</string>
+    <string name="savings">Savings</string>
+    <string name="payments">Payments</string>
+    <string name="more">More</string>
+    <string name="recent_transactions">Recent Transactions</string>
+    <string name="incomes">Incomes</string>
+    <string name="outcomes">Outcomes</string>
 </resources>

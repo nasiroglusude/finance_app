@@ -1,14 +1,15 @@
 package com.example.financeapp.activity.menu
 
-import HomeFragment
 import KidsFragment
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.financeapp.R
 import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.activity.menu.navigation.ExchangeFragment
+import com.example.financeapp.activity.menu.navigation.HomeFragment
 import com.example.financeapp.activity.menu.navigation.ProfileFragment
 
 class MenuActivity: AppCompatActivity() {
@@ -33,6 +34,9 @@ class MenuActivity: AppCompatActivity() {
                     replaceFragment(KidsFragment())
                     true
                 }
+                R.id.add -> {
+                    true
+                }
                 R.id.exchange -> {
                     replaceFragment(ExchangeFragment())
                     true
@@ -46,7 +50,7 @@ class MenuActivity: AppCompatActivity() {
         }
     }
 
-    private fun replaceFragment(fragment: Fragment) {
+    fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
             .replace(binding.frameLayout.id, fragment)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)

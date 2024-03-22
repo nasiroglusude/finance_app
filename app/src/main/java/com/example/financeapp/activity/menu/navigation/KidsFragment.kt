@@ -22,6 +22,7 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
     private lateinit var adapter: KidsAdapter
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private var kidsList: MutableList<User> = mutableListOf()
 
     // ChildAdapter sınıfındaki arayüz metodunu uygulama
     override fun onDeleteChildClick(position: Int) {
@@ -40,12 +41,15 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         auth = FirebaseAuth.getInstance()
 
         // RecyclerView'ı başlat
-        adapter = KidsAdapter(mutableListOf(), this)
+        adapter = KidsAdapter(kidsList, this)
         binding.childrenList.layoutManager = LinearLayoutManager(requireContext())
         binding.childrenList.adapter = adapter
 
         // Firebase'den çocuk verilerini al
-        fetchChildrenData()
+        if (kidsList.isEmpty()) {
+            println("Databaseden çekti")
+            fetchChildrenData()
+        }
 
         // "Çocuk Ekle" düğmesi için tıklama dinleyicisini ayarla
         binding.btnAddChildren.setOnClickListener {
@@ -109,29 +113,37 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
 
     // Çocuk verilerini Firebase'den almak için fonksiyon
     private fun fetchChildrenData() {
-        val query: Query = databaseReference.child("child").orderByChild("children").equalTo(true)
-        query.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-                val kidsList: MutableList<User> = mutableListOf()
-                for (childSnapshot in snapshot.children) {
-                    val user: User? = childSnapshot.getValue(User::class.java)
-                    user?.let { kidsList.add(it) }
-                }
-                adapter.updateData(kidsList)
+        val currentUserEmail = FirebaseAuth.getInstance().currentUser?.email
 
-                // Alınan verileri yazdır
-                println("Alınan ${kidsList.size} kullanıcılar")
-                kidsList.forEachIndexed { index, user ->
-                    println("Kullanıcı ${index + 1}: $user")
-                }
-            }
+        currentUserEmail?.let { email ->
+            val query: Query = databaseReference.child("child").orderByChild("parentMail").equalTo(email)
+            query.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val kidsList: MutableList<User> = mutableListOf()
+                    for (childSnapshot in snapshot.children) {
+                        val child: User? = childSnapshot.getValue(User::class.java)
+                        child?.let { kidsList.add(it) }
+                    }
+                    adapter.updateData(kidsList)
 
-            override fun onCancelled(error: DatabaseError) {
-                // onCancelled'ı ele al
-                println("Alma işlemi iptal edildi: ${error.message}")
-            }
-        })
+                    // Alınan verileri yazdır
+                    println("Alınan ${kidsList.size} kullanıcılar")
+                    kidsList.forEachIndexed { index, user ->
+                        println("Kullanıcı ${index + 1}: $user")
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // onCancelled'ı ele al
+                    println("Alma işlemi iptal edildi: ${error.message}")
+                }
+            })
+        } ?: run {
+            // Eğer mevcut kullanıcı yoksa bir hata mesajı yazdır
+            println("Mevcut kullanıcı bulunamadı.")
+        }
     }
+
 
     // Rastgele bir şifre oluşturmak için fonksiyon
     private fun generateRandomPassword(length: Int): String {
