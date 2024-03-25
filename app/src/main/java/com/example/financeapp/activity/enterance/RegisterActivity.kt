@@ -4,7 +4,9 @@ import android.content.ContentValues.TAG
 import android.os.Bundle
 import android.view.View
 import android.content.Intent
+import android.text.Editable
 import android.text.SpannableString
+import android.text.TextWatcher
 import android.text.method.LinkMovementMethod
 import android.text.style.ClickableSpan
 import android.util.Log
@@ -15,8 +17,8 @@ import java.util.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
 import com.example.financeapp.activity.menu.MenuActivity
-import com.example.financeapp.databinding.ActivityRegisterBinding
 import com.example.financeapp.data.User
+import com.example.financeapp.databinding.ActivityRegisterBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
@@ -35,9 +37,11 @@ class RegisterActivity : AppCompatActivity() {
         binding = ActivityRegisterBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        binding.btnSignup.alpha = 0.5f
         EditTextListener()
         setupClickListener()
         setupClickableSpan()
+        setupTextChangeListeners()
     }
 
     // E-posta ve Doğum Tarihi alanlarını dinleyen fonksiyonlar
@@ -48,30 +52,28 @@ class RegisterActivity : AppCompatActivity() {
             }
         }
 
-        binding.dateContainer.setOnFocusChangeListener{_, focused->
+        binding.password.setOnFocusChangeListener{_, focused->
             if(!focused){
-                binding.dateContainer.helperText = validDate()
+                binding.passwordContainer.helperText = validPassword()
             }
         }
     }
-
-    // Doğum Tarihi alanı için geçerlilik kontrolü yapan fonksiyon
-    private fun validDate(): String? {
-        val dateText = binding.dateOfBirth.text.toString()
-        val dateRegex = Regex("""^(0[1-9]|[12][0-9]|3[01])/(0[1-9]|1[0-2])/([0-9]{2})$""")
-        if (!dateRegex.matches(dateText)) {
-            return "Geçersiz Tarih"
-        }
-        return null
-    }
-
 
     // E-posta alanı için geçerlilik kontrolü yapan fonksiyon
     private fun validEmail(): String? {
         val emailText = binding.email.text.toString()
         if(!Patterns.EMAIL_ADDRESS.matcher(emailText).matches())
         {
-            return "Geçersiz E-posta Adresi"
+            return getString(R.string.invalid_mail)
+        }
+        return null
+    }
+
+    private fun validPassword(): String?{
+        val password = binding.password.text.toString()
+        val isPasswordValid = password.length >= 6 && password.any { it.isUpperCase() }
+        if (!isPasswordValid) {
+            return getString(R.string.invalid_password)
         }
         return null
     }
@@ -179,7 +181,7 @@ class RegisterActivity : AppCompatActivity() {
 
             override fun updateDrawState(ds: android.text.TextPaint) {
                 super.updateDrawState(ds)
-                ds.isUnderlineText = true
+                ds.isUnderlineText = false
                 ds.color = resources.getColor(R.color.purple_500)
             }
         }
@@ -213,4 +215,53 @@ class RegisterActivity : AppCompatActivity() {
         val intent = Intent(this, LoginActivity::class.java)
         startActivity(intent)
     }
+
+    // Metin değişikliği dinleyicilerini ayarlayan fonksiyon
+    private fun setupTextChangeListeners() {
+
+
+        binding.email.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                updateRegisterButtonState()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Gerekli değil
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Gerekli değil
+            }
+        })
+
+        binding.password.addTextChangedListener(object : TextWatcher {
+            override fun afterTextChanged(s: Editable?) {
+                updateRegisterButtonState()
+            }
+
+            override fun beforeTextChanged(s: CharSequence?, start: Int, count: Int, after: Int) {
+                // Gerekli değil
+            }
+
+            override fun onTextChanged(s: CharSequence?, start: Int, before: Int, count: Int) {
+                // Gerekli değil
+            }
+        })
+
+
+    }
+
+    // Kayıt butonunun durumunu güncelleyen fonksiyon
+    private fun updateRegisterButtonState() {
+        val email = binding.email.text.toString().trim()
+        val password = binding.password.text.toString().trim()
+
+        // Parola uzunluğu kontrolü
+        val isPasswordValid = password.length >= 6 && password.any { it.isUpperCase() }
+
+        val isValidInput = email.isNotEmpty() && password.isNotEmpty() && isPasswordValid
+        binding.btnSignup.isEnabled = isValidInput
+        binding.btnSignup.alpha = if (isValidInput) 1.0f else 0.5f
+    }
+
 }

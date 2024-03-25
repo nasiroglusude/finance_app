@@ -28,5 +28,18 @@
     <string name="delete">Sil</string>
     <string name="available_balance">Mevcut Bakiye</string>
     <string name="select_language">Dil Seç</string>
-
+    <string name="debts">Borçlar</string>
+    <string name="savings">Birikimler</string>
+    <string name="payments">Ödemeler</string>
+    <string name="more">Daha Fazla</string>
+    <string name="recent_transactions">Son İşlemler</string>
+    <string name="incomes">Gelirler</string>
+    <string name="outcomes">Giderler</string>
+    <string name="invalid_date">Geçersiz Tarih</string>
+    <string name="invalid_mail">Geçersiz Mail Adresi\n</string>
+    <string name="invalid_password">Geçersiz Şifre</string>
+    <string name="home">EV</string>
+    <string name="kids">ÇOCUK</string>
+    <string name="exchange">DÖVİZ</string>
+    <string name="profile">PROFİL</string>
 </resources>

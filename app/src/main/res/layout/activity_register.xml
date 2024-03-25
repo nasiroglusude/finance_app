@@ -134,10 +134,10 @@
 
                 <com.google.android.material.textfield.TextInputEditText
                     android:id="@+id/date_of_birth"
-                    android:fontFamily="@font/kanit"
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
-                    android:inputType="datetime"/>
+                    android:fontFamily="@font/kanit"
+                    android:inputType="datetime" />
 
             </com.google.android.material.textfield.TextInputLayout>
 
@@ -162,10 +162,12 @@
             </com.google.android.material.textfield.TextInputLayout>
 
             <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/passwordContainer"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:hint="@string/password"
                 app:startIconDrawable="@drawable/password"
+                app:helperTextTextColor="@android:color/holo_red_dark"
                 app:passwordToggleEnabled="true"
                 app:boxBackgroundMode="outline">
 

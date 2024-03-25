@@ -1,18 +1,18 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/bottom_nav_menu">
-    <item android:title="HOME"
+    <item android:title="@string/home"
         android:id="@+id/home"
         android:icon="@drawable/home"/>
-    <item android:title="KIDS"
+    <item android:title="@string/kids"
         android:id="@+id/kids"
         android:icon="@drawable/kids"/>
     <item android:id="@+id/add"
         android:title="" />
-    <item android:title="EXCHANGE"
+    <item android:title="@string/exchange"
         android:id="@+id/exchange"
         android:icon="@drawable/exchange"/>
-    <item android:title="PROFILE"
+    <item android:title="@string/profile"
         android:id="@+id/profile"
         android:icon="@drawable/profile"/>
 </menu>

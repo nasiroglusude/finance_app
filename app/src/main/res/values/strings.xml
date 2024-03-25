@@ -35,4 +35,11 @@
     <string name="recent_transactions">Recent Transactions</string>
     <string name="incomes">Incomes</string>
     <string name="outcomes">Outcomes</string>
+    <string name="invalid_date">Invalid Date</string>
+    <string name="invalid_mail">Invalid Mail Adress\n</string>
+    <string name="invalid_password">Invalid Password</string>
+    <string name="home">HOME</string>
+    <string name="kids">KIDS</string>
+    <string name="exchange">EXCHANGE</string>
+    <string name="profile">PROFILE</string>
 </resources>
