@@ -11,6 +11,8 @@ import com.example.financeapp.data.Child
 import com.example.financeapp.data.User
 import com.example.financeapp.databinding.DialogAddChildBinding
 import com.example.financeapp.databinding.FragmentKidsBinding
+import com.example.financeapp.databinding.KidsCardViewBinding
+import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import java.text.SimpleDateFormat
@@ -24,17 +26,13 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
     private lateinit var auth: FirebaseAuth
     private var kidsList: MutableList<User> = mutableListOf()
 
-    // ChildAdapter sınıfındaki arayüz metodunu uygulama
-    override fun onDeleteChildClick(position: Int) {
-        // Silme işlemini burada ele al
-    }
-
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentKidsBinding.inflate(inflater, container, false)
         val view = binding.root
+
 
         // Firebase bileşenlerini başlat
         databaseReference = FirebaseDatabase.getInstance().reference.child("users")
@@ -55,6 +53,9 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         binding.btnAddChildren.setOnClickListener {
             showAddChildDialog()
         }
+
+
+
 
         return view
     }
@@ -151,6 +152,46 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         return (1..length)
             .map { allowedChars.random() }
             .joinToString("")
+    }
+
+
+
+    // Inside KidsFragment class
+
+    // Function to show the material dialog for confirmation
+    private fun showDeleteChildConfirmationDialog(childId: String) {
+        MaterialAlertDialogBuilder(requireContext())
+            .setTitle("Delete Child")
+            .setMessage("Are you sure you want to delete this child?")
+            .setPositiveButton("OK") { dialog, _ ->
+                // Call a function to delete the child from Firebase
+                deleteChild(childId)
+            }
+            .setNegativeButton("Cancel") { dialog, _ ->
+                dialog.dismiss()
+            }
+            .show()
+    }
+
+    // Function to delete the child from Firebase
+    private fun deleteChild(childId: String) {
+        val childRef = databaseReference.child("child").child(childId)
+        childRef.removeValue()
+            .addOnSuccessListener {
+                // Child successfully deleted
+                fetchChildrenData() // Refresh the UI after deletion
+            }
+            .addOnFailureListener { exception ->
+                // Failed to delete child
+                Log.e(TAG, "Failed to delete child: $exception")
+                // Handle the failure here
+            }
+    }
+
+    // Update the onDeleteChildClick function
+    override fun onDeleteChildClick(position: Int) {
+        val childId = kidsList[position].id
+        showDeleteChildConfirmationDialog(childId)
     }
 
 }
