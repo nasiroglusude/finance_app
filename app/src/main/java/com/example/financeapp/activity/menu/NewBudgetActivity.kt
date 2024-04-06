@@ -41,6 +41,9 @@ class NewBudgetActivity : AppCompatActivity() {
         binding.saveButton.setOnClickListener {
             saveBudgetToFirebase()
         }
+        binding.backButton.setOnClickListener{
+
+        }
 
         val spinnerAdapter = ArrayAdapter(
             this,

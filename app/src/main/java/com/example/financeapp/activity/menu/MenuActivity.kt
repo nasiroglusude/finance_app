@@ -22,6 +22,9 @@ class MenuActivity: AppCompatActivity() {
         setContentView(binding.root)
         replaceFragment(HomeFragment())
         navigationButtonListener()
+        binding.btnAdd.setOnClickListener{
+            navigateToActivity(this, NewBudgetActivity::class.java)
+        }
     }
 
     private fun navigationButtonListener(){
@@ -33,10 +36,6 @@ class MenuActivity: AppCompatActivity() {
                 }
                 R.id.kids -> {
                     replaceFragment(KidsFragment())
-                    true
-                }
-                R.id.add -> {
-                    navigateToActivity(this, NewBudgetActivity::class.java)
                     true
                 }
                 R.id.exchange -> {
