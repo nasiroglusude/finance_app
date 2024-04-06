@@ -34,7 +34,7 @@
 <string name="more">More</string>
 <string name="recent_transactions">Recent Transactions</string>
 <string name="incomes">Incomes</string>
-<string name="outcomes">Outcomes</string>
+<string name="outcomes">Expenses</string>
 <string name="invalid_date">Invalid Date</string>
 <string name="invalid_mail">Invalid Mail Adress\n</string>
 <string name="invalid_password">Invalid Password</string>
@@ -42,4 +42,14 @@
 <string name="kids">KIDS</string>
 <string name="exchange">EXCHANGE</string>
 <string name="profile">PROFILE</string>
+<string name="new_budget">New Budget</string>
+<string name="set">Set</string>
+<string name="title">Title</string>
+<string name="income">Income</string>
+<string name="expense">Expense</string>
+<string name="color_picker">Color</string>
+<string name="category">Category</string>
+<string name="save">Save</string>
+<string name="amount">Amount</string>
+
 </resources>

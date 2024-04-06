@@ -1,31 +1,36 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical"
     android:gravity="center"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/background"
-    android:padding="10dp">
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="30dp"
+    android:paddingTop="30dp">
 
     <ImageButton
         android:id="@+id/back_button"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_gravity="left"
-        android:padding="15dp"
+        android:layout_alignParentTop="true"
+
+        android:layout_alignParentStart="true"
         android:background="@android:color/transparent"
         android:src="@drawable/baseline_keyboard_backspace_24"/>
 
     <!-- "Welcome back" text -->
     <TextView
+        android:id="@+id/welcome_back_text"
         android:layout_width="wrap_content"
         android:layout_height="150dp"
         android:fontFamily="@font/kanit"
         android:text="@string/welcome_back"
         android:textColor="@color/black"
-        android:layout_gravity="left"
-        android:padding="15dp"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/back_button"
         android:textSize="45sp"
         android:textStyle="bold"/>
 
@@ -34,9 +39,8 @@
         android:layout_height="wrap_content"
         android:text="@string/login_to_continue"
         android:fontFamily="@font/lora"
-        android:layout_gravity="left"
+        android:layout_below="@+id/welcome_back_text"
         android:paddingBottom="15dp"
-        android:paddingLeft="15dp"
         android:layout_marginBottom="40dp"
         android:textSize="17sp"
         />
@@ -45,6 +49,7 @@
         android:layout_width="match_parent"
         android:layout_height="450dp"
         android:layout_gravity="center"
+        android:layout_alignParentBottom="true"
         android:padding="15dp"
         app:cardCornerRadius="50dp">
 
@@ -122,4 +127,4 @@
         </LinearLayout>
     </com.google.android.material.card.MaterialCardView>
 
-</LinearLayout>
+</RelativeLayout>

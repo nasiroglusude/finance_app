@@ -1,9 +1,10 @@
 package com.example.financeapp.activity.menu
 
 import KidsFragment
+import android.content.Context
+import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
-import androidx.core.view.get
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
 import com.example.financeapp.R
@@ -35,6 +36,7 @@ class MenuActivity: AppCompatActivity() {
                     true
                 }
                 R.id.add -> {
+                    navigateToActivity(this, NewBudgetActivity::class.java)
                     true
                 }
                 R.id.exchange -> {
@@ -55,5 +57,10 @@ class MenuActivity: AppCompatActivity() {
             .replace(binding.frameLayout.id, fragment)
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .commit()
+    }
+
+    fun navigateToActivity(context: Context, targetActivity: Class<*>) {
+        val intent = Intent(context, targetActivity)
+        context.startActivity(intent)
     }
 }

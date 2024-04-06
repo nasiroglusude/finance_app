@@ -42,4 +42,13 @@
     <string name="kids">ÇOCUK</string>
     <string name="exchange">DÖVİZ</string>
     <string name="profile">PROFİL</string>
+    <string name="new_budget">Yeni Bütçe</string>
+    <string name="title">Başlık</string>
+    <string name="income">Gelir</string>
+    <string name="expense">Gider</string>
+    <string name="color_picker">Renk</string>
+    <string name="set">Ayarla</string>
+    <string name="category">Kategori</string>
+    <string name="save">Kaydet</string>
+    <string name="amount">Değer</string>
 </resources>

@@ -45,7 +45,7 @@ android {
 dependencies {
 
 // Import the BoM for the Firebase platform
-    implementation(platform("com.google.firebase:firebase-bom:32.7.4"))
+    implementation(platform("com.google.firebase:firebase-bom:32.8.0"))
     implementation("com.google.firebase:firebase-analytics")
     implementation("com.google.firebase:firebase-auth")
     // Add the dependency for the Realtime Database library
@@ -62,6 +62,7 @@ dependencies {
     implementation("com.google.android.material:material:1.11.0")
     implementation("com.google.firebase:firebase-database:20.3.1")
 
+    implementation("com.github.skydoves:colorpickerview:2.1.0")
 
     //Fragment implemantation**
     implementation("androidx.navigation:navigation-fragment-ktx:2.7.7")

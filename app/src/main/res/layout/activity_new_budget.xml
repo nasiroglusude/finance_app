@@ -1,0 +1,131 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="30dp">
+
+    <LinearLayout
+        android:id="@+id/actionBarLayout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <ImageButton
+            android:id="@+id/back_button"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@android:color/transparent"
+            android:src="@drawable/baseline_keyboard_backspace_24" />
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_weight="1"
+            android:fontFamily="@font/kanit"
+            android:gravity="center"
+            android:text="@string/new_budget"
+            android:textSize="20sp" />
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/actionBarLayout"
+        android:orientation="vertical"
+        android:paddingTop="30dp"
+        android:paddingBottom="30dp">
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/title"
+            android:textColorHint="@color/black"
+            app:boxBackgroundMode="outline"
+            app:endIconMode="clear_text">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/title"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kanit" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:paddingTop="20dp"
+            android:layout_height="wrap_content"
+            android:hint="@string/amount"
+            android:textColorHint="@color/black"
+            app:boxBackgroundMode="outline"
+            app:endIconMode="clear_text">
+            <!-- Replace the ColorPickerView with a button -->
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/amount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kanit"
+                android:inputType="number"/>
+
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <!-- Spinner for currency menu -->
+        <Button
+            android:id="@+id/colorPickerButton"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:text="@string/color_picker" />
+
+        <Spinner
+            android:id="@+id/currency_spinner"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"/>
+
+        <!-- RadioGroup for budget type -->
+        <RadioGroup
+            android:id="@+id/budget_type_radio_group"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal">
+
+            <!-- RadioButtons for income and expense -->
+            <RadioButton
+                android:id="@+id/income_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/income" />
+
+            <RadioButton
+                android:id="@+id/expense_radio_button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center"
+                android:text="@string/expense" />
+
+        </RadioGroup>
+
+
+
+    </LinearLayout>
+    <Button
+        android:id="@+id/saveButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentBottom="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/save" />
+
+
+</RelativeLayout>
