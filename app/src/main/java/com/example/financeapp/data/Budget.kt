@@ -6,8 +6,9 @@ data class Budget(
     val amount: String = "",
     val color: String = "",
     val currency: String = "",
-    val type: String = ""
+    val type: String = "",
+    val category: String = ""
 ) {
     // Add a no-argument constructor
-    constructor() : this("", "", "", "", "", "")
+    constructor() : this("", "", "", "", "", "", "")
 }

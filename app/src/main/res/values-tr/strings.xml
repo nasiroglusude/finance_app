@@ -51,5 +51,8 @@
 <string name="category">Category</string>
 <string name="save">Save</string>
 <string name="amount">Amount</string>
+<string name="title_category">Category Name</string>
+    <string name="add_category">New Category</string>
+
 
 </resources>

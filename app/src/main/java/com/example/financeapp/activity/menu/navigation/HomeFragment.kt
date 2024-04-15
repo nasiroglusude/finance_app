@@ -55,57 +55,58 @@ class HomeFragment : Fragment() {
     private fun fetchBudgetsFromFirebase() {
         val userId = auth.currentUser?.uid
         userId?.let { uid ->
-            databaseReference.child(uid).child("budgets").addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(snapshot: DataSnapshot) {
-                    val incomeLabels = mutableListOf<String>()
-                    val incomes = mutableListOf<Double>()
-                    val outcomeLabels = mutableListOf<String>()
-                    val outcomes = mutableListOf<Double>()
+            databaseReference.child(uid).child("budgets")
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val incomeLabels = mutableListOf<String>()
+                        val incomes = mutableListOf<Double>()
+                        val outcomeLabels = mutableListOf<String>()
+                        val outcomes = mutableListOf<Double>()
 
-                    for (budgetSnapshot in snapshot.children) {
-                        val budget = budgetSnapshot.getValue(Budget::class.java)
-                        budget?.let {
-                            if (it.type == "Income") {
-                                incomeLabels.add(it.title)
-                                incomes.add(it.amount.toDouble())
-                            } else {
-                                outcomeLabels.add(it.title)
-                                outcomes.add(it.amount.toDouble())
+                        for (budgetSnapshot in snapshot.children) {
+                            val budget = budgetSnapshot.getValue(Budget::class.java)
+                            budget?.let {
+                                if (it.type == "Income") {
+                                    incomeLabels.add(it.title)
+                                    incomes.add(it.amount.toDouble())
+                                } else {
+                                    outcomeLabels.add(it.title)
+                                    outcomes.add(it.amount.toDouble())
+                                }
                             }
+                        }
+
+                        // Create pie chart
+                        val pieChart = createPieChart()
+                        val colors = listOf(
+                            ContextCompat.getColor(requireContext(), R.color.colorBlue),
+                            ContextCompat.getColor(requireContext(), R.color.colorRed),
+                            ContextCompat.getColor(requireContext(), R.color.colorGreen),
+                            ContextCompat.getColor(requireContext(), R.color.colorYellow)
+                        )
+
+                        // Display income data on the pie chart initially
+                        updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
+                        binding.chartContainer.addView(pieChart)
+
+                        // Set up button click listeners to switch between income and expense data
+                        binding.btnIncome.setOnClickListener {
+                            animateButton(binding.btnIncome, true)
+                            animateButton(binding.btnOutcome, false)
+                            updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
+                        }
+
+                        binding.btnOutcome.setOnClickListener {
+                            animateButton(binding.btnIncome, false)
+                            animateButton(binding.btnOutcome, true)
+                            updatePieChartDataSet(pieChart, outcomeLabels, outcomes, colors)
                         }
                     }
 
-                    // Create pie chart
-                    val pieChart = createPieChart()
-                    val colors = listOf(
-                        ContextCompat.getColor(requireContext(), R.color.colorBlue),
-                        ContextCompat.getColor(requireContext(), R.color.colorRed),
-                        ContextCompat.getColor(requireContext(), R.color.colorGreen),
-                        ContextCompat.getColor(requireContext(), R.color.colorYellow)
-                    )
-
-                    // Display income data on the pie chart initially
-                    updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
-                    binding.chartContainer.addView(pieChart)
-
-                    // Set up button click listeners to switch between income and expense data
-                    binding.btnIncome.setOnClickListener {
-                        animateButton(binding.btnIncome, true)
-                        animateButton(binding.btnOutcome, false)
-                        updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
+                    override fun onCancelled(error: DatabaseError) {
+                        // Handle error
                     }
-
-                    binding.btnOutcome.setOnClickListener {
-                        animateButton(binding.btnIncome, false)
-                        animateButton(binding.btnOutcome, true)
-                        updatePieChartDataSet(pieChart, outcomeLabels, outcomes, colors)
-                    }
-                }
-
-                override fun onCancelled(error: DatabaseError) {
-                    // Handle error
-                }
-            })
+                })
         }
     }
 
@@ -127,7 +128,8 @@ class HomeFragment : Fragment() {
 
         // Set up PieDataSet
         val dataSet = PieDataSet(entries, "Budgets")
-        dataSet.colors = colors
+        dataSet.colors = colors // Assign colors directly to the PieDataSet
+
         dataSet.valueTextSize = 16f
         dataSet.valueTextColor = Color.BLACK
         dataSet.valueTypeface = Typeface.DEFAULT_BOLD // Set the typeface
@@ -137,6 +139,7 @@ class HomeFragment : Fragment() {
         pieChart.data = data
         pieChart.invalidate()
     }
+
 
     private fun animateButton(button: Button, isSelected: Boolean) {
         // Update the button's selected state

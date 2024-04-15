@@ -51,4 +51,6 @@
     <string name="category">Kategori</string>
     <string name="save">Kaydet</string>
     <string name="amount">Değer</string>
+    <string name="title_category">Kategori İsmi</string>
+    <string name="add_category">Yeni Kategori</string>
 </resources>

@@ -6,11 +6,28 @@
     android:background="@drawable/rounded_background"
     android:orientation="vertical">
 
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/title_category"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="@string/title_category"
+        android:textColorHint="@color/black">
+
+        <com.google.android.material.textfield.TextInputEditText
+            android:id="@+id/categoryName"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/kanit" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
     <com.skydoves.colorpickerview.ColorPickerView
         android:id="@+id/colorPickerView"
         android:layout_width="match_parent"
         android:layout_height="300dp"
-        android:layout_margin="16dp" />
+        android:layout_margin="16dp"
+        android:layout_below="@+id/title_category"/>
 
     <View
         android:id="@+id/colorPreview"
