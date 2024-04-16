@@ -71,7 +71,7 @@ class RegisterActivity : AppCompatActivity() {
 
     private fun validPassword(): String?{
         val password = binding.password.text.toString()
-        val isPasswordValid = password.length >= 6 && password.any { it.isUpperCase() }
+        val isPasswordValid = password.length >= 6// && password.any { it.isUpperCase() }
         if (!isPasswordValid) {
             return getString(R.string.invalid_password)
         }
@@ -218,8 +218,6 @@ class RegisterActivity : AppCompatActivity() {
 
     // Metin değişikliği dinleyicilerini ayarlayan fonksiyon
     private fun setupTextChangeListeners() {
-
-
         binding.email.addTextChangedListener(object : TextWatcher {
             override fun afterTextChanged(s: Editable?) {
                 updateRegisterButtonState()
@@ -257,7 +255,7 @@ class RegisterActivity : AppCompatActivity() {
         val password = binding.password.text.toString().trim()
 
         // Parola uzunluğu kontrolü
-        val isPasswordValid = password.length >= 6 && password.any { it.isUpperCase() }
+        val isPasswordValid = password.length >= 6// && password.any { it.isUpperCase() }
 
         val isValidInput = email.isNotEmpty() && password.isNotEmpty() && isPasswordValid
         binding.btnSignup.isEnabled = isValidInput

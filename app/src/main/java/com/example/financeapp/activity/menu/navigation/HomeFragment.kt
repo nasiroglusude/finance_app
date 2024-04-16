@@ -5,6 +5,7 @@ import android.animation.ObjectAnimator
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,84 +34,73 @@ class HomeFragment : Fragment() {
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
+        // FragmentHomeBinding'i şişir
         binding = FragmentHomeBinding.inflate(inflater, container, false)
         val view = binding.root
 
-        // Initialize Firebase components
+        // Firebase bileşenlerini başlat
         databaseReference = FirebaseDatabase.getInstance().reference.child("users")
         auth = Firebase.auth
 
-        // Fetch budgets from Firebase
+        // Firebase'den bütçeleri al
         fetchBudgetsFromFirebase()
 
+        // Kullanılabilir bakiyeyi ayarla
         binding.availableBalance.text = "10.000"
+        // Para birimini ayarla
         binding.currency.text = "$"
 
+        // Butonları animasyonla
         animateButton(binding.btnIncome, true)
         animateButton(binding.btnOutcome, false)
 
         return view
     }
 
+    //Budgetleri firebase çeken fonksiyon
     private fun fetchBudgetsFromFirebase() {
+        // Kullanıcı kimliğini al
         val userId = auth.currentUser?.uid
         userId?.let { uid ->
             databaseReference.child(uid).child("budgets")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
-                        val incomeLabels = mutableListOf<String>()
-                        val incomes = mutableListOf<Double>()
-                        val outcomeLabels = mutableListOf<String>()
-                        val outcomes = mutableListOf<Double>()
+                        val labels = mutableListOf<String>()
+                        val amounts = mutableListOf<Double>()
+                        val colors = mutableListOf<String>()
 
+                        // Bütün bütçeleri döngüye al
                         for (budgetSnapshot in snapshot.children) {
+                            // Budget nesnesini al
                             val budget = budgetSnapshot.getValue(Budget::class.java)
                             budget?.let {
-                                if (it.type == "Income") {
-                                    incomeLabels.add(it.title)
-                                    incomes.add(it.amount.toDouble())
-                                } else {
-                                    outcomeLabels.add(it.title)
-                                    outcomes.add(it.amount.toDouble())
-                                }
+                                // Etiketleri, miktarları ve renkleri listelere ekle
+                                labels.add(it.title)
+                                amounts.add(it.amount.toDouble())
+                                // Geçersiz renk dizelerini ele al
+                                println("RENK BURADA:"+it.color)
+                                colors.add(it.color)
                             }
                         }
 
-                        // Create pie chart
+                        // Pasta grafiği oluştur
                         val pieChart = createPieChart()
-                        val colors = listOf(
-                            ContextCompat.getColor(requireContext(), R.color.colorBlue),
-                            ContextCompat.getColor(requireContext(), R.color.colorRed),
-                            ContextCompat.getColor(requireContext(), R.color.colorGreen),
-                            ContextCompat.getColor(requireContext(), R.color.colorYellow)
-                        )
 
-                        // Display income data on the pie chart initially
-                        updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
+                        // Verileri pasta grafiğinde göster
+                        updatePieChartDataSet(pieChart, labels, amounts, colors)
                         binding.chartContainer.addView(pieChart)
-
-                        // Set up button click listeners to switch between income and expense data
-                        binding.btnIncome.setOnClickListener {
-                            animateButton(binding.btnIncome, true)
-                            animateButton(binding.btnOutcome, false)
-                            updatePieChartDataSet(pieChart, incomeLabels, incomes, colors)
-                        }
-
-                        binding.btnOutcome.setOnClickListener {
-                            animateButton(binding.btnIncome, false)
-                            animateButton(binding.btnOutcome, true)
-                            updatePieChartDataSet(pieChart, outcomeLabels, outcomes, colors)
-                        }
                     }
 
                     override fun onCancelled(error: DatabaseError) {
-                        // Handle error
+                        // Hata durumunu ele al
                     }
                 })
         }
     }
 
+    //PieChart'ı oluşturan fonksiyon
     private fun createPieChart(): PieChart {
+        // Pasta grafiğini oluştur
         val pieChart = PieChart(requireContext())
         pieChart.layoutParams = ViewGroup.LayoutParams(
             ViewGroup.LayoutParams.MATCH_PARENT,
@@ -119,39 +109,42 @@ class HomeFragment : Fragment() {
         return pieChart
     }
 
-    private fun updatePieChartDataSet(pieChart: PieChart, labels: List<String>, income: List<Double>, colors: List<Int>) {
-        // Prepare data entries
+    //Pie Chartı verilen label-value ve color değerlerine göre güncelleyen fonksiyon
+    private fun updatePieChartDataSet(pieChart: PieChart, labels: List<String>, income: List<Double>, colors: List<String>) {
+        // Veri girişlerini hazırla
         val entries = mutableListOf<PieEntry>()
         for (i in labels.indices) {
             entries.add(PieEntry(income[i].toFloat(), labels[i]))
         }
 
-        // Set up PieDataSet
-        val dataSet = PieDataSet(entries, "Budgets")
-        dataSet.colors = colors // Assign colors directly to the PieDataSet
+        // Renk dizelerini renk tamsayılarına dönüştür
+        val parsedColors = colors.map { Color.parseColor(it) }
+
+        // Pasta veri kümesini ayarla
+        val dataSet = PieDataSet(entries, "Bütçeler")
+        dataSet.colors = parsedColors.toMutableList() // Renkleri Pasta veri kümesine ata
 
         dataSet.valueTextSize = 16f
         dataSet.valueTextColor = Color.BLACK
-        dataSet.valueTypeface = Typeface.DEFAULT_BOLD // Set the typeface
+        dataSet.valueTypeface = Typeface.DEFAULT_BOLD // Yazı tipini ayarla
 
-        // Create PieData and set it to PieChart
+        // Pasta verisini oluştur ve Pasta grafiğine ayarla
         val data = PieData(dataSet)
         pieChart.data = data
         pieChart.invalidate()
     }
 
-
     private fun animateButton(button: Button, isSelected: Boolean) {
-        // Update the button's selected state
+        // Butonun seçili durumunu güncelle
         button.isSelected = isSelected
 
-        // Set the background drawable based on the button's selected state
+        // Butonun seçili durumuna göre arka plan drawable'ını ayarla
         button.background = ContextCompat.getDrawable(
             requireContext(),
             R.drawable.btn_selector
         )
 
-        // Animate the button
+        // Butonu animasyonla
         val scaleValue = if (isSelected) 1.05f else 1.0f
         val scaleX = ObjectAnimator.ofFloat(button, View.SCALE_X, scaleValue)
         val scaleY = ObjectAnimator.ofFloat(button, View.SCALE_Y, scaleValue)
@@ -162,7 +155,3 @@ class HomeFragment : Fragment() {
         animatorSet.start()
     }
 }
-
-
-
-
