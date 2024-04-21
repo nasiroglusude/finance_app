@@ -16,7 +16,6 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import java.util.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
-import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.data.User
 import com.example.financeapp.databinding.ActivityRegisterBinding
 import com.google.firebase.Firebase
@@ -128,8 +127,9 @@ class RegisterActivity : AppCompatActivity() {
                         dateOfBirth,
                         email,
                         password,
-                        currentDateString,
-                        children = false
+                        balance = "",
+                        currency = "",
+                        currentDateString
                     )
 
                     val databaseReference = FirebaseDatabase.getInstance().reference.child("users").child(user?.uid ?: "")
@@ -160,7 +160,7 @@ class RegisterActivity : AppCompatActivity() {
     private fun updateUI(user: FirebaseUser?) {
         if (user != null) {
             // Kullanıcı oturum açtı, ana etkinliğe yönlendirme veya başka bir işlem gerçekleştirme
-            val intent = Intent(this, MenuActivity::class.java)
+            val intent = Intent(this, UserPreferencesActivity::class.java)
             startActivity(intent)
             finish() // İsteğe bağlı: Kullanıcının geri dönmesini önlemek için geçerli etkinliği sonlandır
         } else {

@@ -52,7 +52,10 @@
 <string name="save">Save</string>
 <string name="amount">Amount</string>
 <string name="title_category">Category Name</string>
-    <string name="add_category">New Category</string>
+<string name="add_category">New Category</string>
+<string name="add_pocket_money">Add Pocket Money</string>
+<string name="spending_label">%1$s\'s Spendings</string>
+
 
 
 </resources>

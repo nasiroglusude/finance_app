@@ -53,4 +53,13 @@
     <string name="amount">Değer</string>
     <string name="title_category">Kategori İsmi</string>
     <string name="add_category">Yeni Kategori</string>
+    <string name="add_pocket_money">Harçlık Ekle</string>
+    <string name="spending_label">%s Harcamaları</string>
+    <string name="enter_preferences">Terchilerini Gir</string>
+    <string name="preferences">Tercihler\n</string>
+    <string name="starting_budget">Başlangıç Bütçesi</string>
+    <string name="continue_register">Devam Et</string>
+    <string name="starting_preferences">Başlangıç tercihlerini belirle</string>
+    <string name="pocket_money">Harçlık</string>
+
 </resources>

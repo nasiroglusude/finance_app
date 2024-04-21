@@ -1,25 +1,16 @@
 package com.example.financeapp.activity.enterance
 
-import android.content.ContentValues.TAG
 import android.content.Intent
 import android.os.Bundle
 import android.text.Editable
-import android.text.SpannableString
 import android.text.TextWatcher
-import android.text.method.LinkMovementMethod
-import android.text.style.ClickableSpan
-import android.util.Log
-import android.view.View
-import android.widget.TextView
 import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
-import com.example.financeapp.R
-import com.example.financeapp.activity.menu.ControlledChildActivity
-import com.example.financeapp.activity.menu.MenuActivity
+import com.example.financeapp.activity.menu_child.ChildMenuActivity
+import com.example.financeapp.activity.menu_child.navigation.ChildHomeFragment
 import com.example.financeapp.databinding.ActivityChildLoginBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -36,7 +27,7 @@ class ChildLoginActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         binding = ActivityChildLoginBinding.inflate(layoutInflater)
         setContentView(binding.root)
-        databaseReference = FirebaseDatabase.getInstance().reference.child("users")
+        databaseReference = FirebaseDatabase.getInstance().reference
         supportActionBar?.hide()
 
         // Firebase authentication instance'ını başlat
@@ -134,10 +125,12 @@ class ChildLoginActivity : AppCompatActivity() {
                     val password = childSnapshot.child("password").getValue(String::class.java)
                     // E-posta ve şifrenin eşleşip eşleşmediğini kontrol et
                     if (email == parentEmail && password == parentPassword) {
-                        // Kimlik doğrulaması başarılıysa, ControlledChildActivity'e yönlendir
-                        navigateToControlledChildActivity()
+                        val userId = childSnapshot.key // Kullanıcı ID'sini al
+                        navigateToControlledChildActivity(userId)
+                        println("Child ID: "+userId)
                         return
                     }
+
                 }
                 // Eşleşen kullanıcı bulunamazsa, bir hata mesajı göster
                 Toast.makeText(
@@ -159,10 +152,10 @@ class ChildLoginActivity : AppCompatActivity() {
     }
 
     //Giriş başarılı olduğunda çocuğa özel olan sayfaya (ControlledChildActivity) yönlendir
-    private fun navigateToControlledChildActivity() {
-        val intent = Intent(this, ControlledChildActivity::class.java)
+    private fun navigateToControlledChildActivity(userId: String?) {
+        val intent = Intent(this, ChildMenuActivity::class.java)
+        intent.putExtra("childId", userId) // Kullanıcı ID'sini intent'e ekle
         startActivity(intent)
     }
-
 
 }

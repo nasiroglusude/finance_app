@@ -11,9 +11,10 @@ data class User(
     var dateOfBirth: String = "",
     var email: String = "",
     var password: String = "",
+    var balance:String = "",
+    var currency: String = "",
     var creationDate: String? = null,
-    var children: Boolean = false
 ) {
     // Add a no-argument constructor
-    constructor() : this("", "", "", "", "", "", "", null, false)
+    constructor() : this("", "", "", "", "", "", "","","", null)
 }

@@ -1,4 +1,4 @@
-package com.example.financeapp.activity.menu
+package com.example.financeapp.activity.menu_child
 
 import android.app.Dialog
 import android.content.Context
@@ -10,6 +10,7 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import com.example.financeapp.activity.menu_child.navigation.ChildHomeFragment
 import com.example.financeapp.adapter.CategoryAdapter
 import com.example.financeapp.databinding.ActivityNewBudgetBinding
 import com.example.financeapp.enums.Currency
@@ -24,7 +25,7 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
 
-class NewBudgetActivity : AppCompatActivity() {
+class ChildNewBudgetActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewBudgetBinding
     private lateinit var dialogBinding: DialogAddCategoryBinding
     private lateinit var menuBinding: ActivityMenuBinding
@@ -35,7 +36,6 @@ class NewBudgetActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         menuBinding = ActivityMenuBinding.inflate(layoutInflater)
-
         binding = ActivityNewBudgetBinding.inflate(layoutInflater)
         dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
 
@@ -83,13 +83,18 @@ class NewBudgetActivity : AppCompatActivity() {
         )
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.currencySpinner.adapter = spinnerAdapter
+
+
+
+
+
     }
 
     //Spinnerin içeriğini firebasein categories tablosundan gelen kategorilerin title attributlerini atama
     private fun updateCategorySpinner() {
-        val userId = firebaseAuth.currentUser?.uid
-        userId?.let { uid ->
-            FirebaseDatabase.getInstance().reference.child("users").child(uid).child("categories")
+        val childId = intent.getStringExtra("childId").toString()
+        childId.let { uid ->
+            FirebaseDatabase.getInstance().reference.child("child").child(uid).child("categories")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val categories = mutableListOf<Category>()
@@ -147,9 +152,9 @@ class NewBudgetActivity : AppCompatActivity() {
 
     //Kategoriyi firebase'e kaydeden fonksiyon
     private fun saveCategoryToFirebase(categoryName: String, color: Int) {
-        val userId = firebaseAuth.currentUser?.uid
-        userId?.let { uid ->
-            val categoryId = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+        val childId = intent.getStringExtra("childId").toString()
+        childId.let { uid ->
+            val categoryId = FirebaseDatabase.getInstance().reference.child("child").child(uid)
                 .child("categories").push().key
 
             val category = Category(
@@ -158,7 +163,7 @@ class NewBudgetActivity : AppCompatActivity() {
                 "#" + Integer.toHexString(color)
             )
 
-            FirebaseDatabase.getInstance().reference.child("users").child(uid).child("categories")
+            FirebaseDatabase.getInstance().reference.child("child").child(uid).child("categories")
                 .child(categoryId ?: "").setValue(category)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
@@ -172,9 +177,9 @@ class NewBudgetActivity : AppCompatActivity() {
 
     //Bütçeyi firebase'e kaydeden fonksiyon
     private fun saveBudgetToFirebase() {
-        val userId = firebaseAuth.currentUser?.uid
-        userId?.let { uid ->
-            val budgetId = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+        val childId = intent.getStringExtra("childId").toString()
+        childId.let { uid ->
+            val budgetId = FirebaseDatabase.getInstance().reference.child("child").child(uid)
                 .child("budgets").push().key
             val title = binding.title.text.toString()
             val amount = binding.amount.text.toString()
@@ -196,12 +201,13 @@ class NewBudgetActivity : AppCompatActivity() {
                 categoryName
             )
 
-            FirebaseDatabase.getInstance().reference.child("users").child(uid)
+            FirebaseDatabase.getInstance().reference.child("child").child(uid)
                 .child("budgets").child(budgetId ?: "").setValue(budget)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {
-                        // Bütçe başarıyla kaydedildi
-                        navigateToActivity(this, MenuActivity::class.java)
+                        val intent = Intent(this, ChildMenuActivity::class.java)
+                        intent.putExtra("childId", uid)
+                        startActivity(intent)
                     } else {
                         // Hata durumunu ele al
                     }
@@ -212,5 +218,6 @@ class NewBudgetActivity : AppCompatActivity() {
         val intent = Intent(context, targetActivity)
         context.startActivity(intent)
     }
+
 
 }

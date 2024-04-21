@@ -1,7 +1,8 @@
-package com.example.financeapp.activity.menu.navigation
+package com.example.financeapp.activity.menu_child.navigation
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -9,97 +10,149 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import android.widget.Toast
+import androidx.appcompat.app.AppCompatActivity
 import androidx.core.content.ContextCompat
+import androidx.databinding.DataBindingUtil.bind
+import androidx.databinding.DataBindingUtil.setContentView
 import androidx.fragment.app.Fragment
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu_child.ChildNewBudgetActivity
 import com.example.financeapp.data.Budget
-import com.example.financeapp.data.User
-import com.example.financeapp.databinding.FragmentHomeBinding
-import com.example.financeapp.enums.Currency
+import com.example.financeapp.databinding.ActivityControlledChildBinding
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
-import com.google.firebase.database.*
-import com.google.firebase.ktx.Firebase
-import java.util.prefs.Preferences
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.DatabaseReference
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
-class HomeFragment : Fragment() {
+class ChildHomeFragment : Fragment() {
 
-    private lateinit var binding: FragmentHomeBinding
-    private lateinit var databaseReference: DatabaseReference
+    private lateinit var binding: ActivityControlledChildBinding
     private lateinit var auth: FirebaseAuth
+    private var childId: String? = null
+    private lateinit var databaseReference: DatabaseReference
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // FragmentHomeBinding'i şişir
-        binding = FragmentHomeBinding.inflate(inflater, container, false)
+        // ViewBinding'i başlat
+        binding = ActivityControlledChildBinding.inflate(layoutInflater)
         val view = binding.root
 
-        // Firebase bileşenlerini başlat
-        databaseReference = FirebaseDatabase.getInstance().reference.child("users")
-        auth = Firebase.auth
+        databaseReference = FirebaseDatabase.getInstance().reference.child("child")
+
+        childId = arguments?.getString("childId")
+
 
         // Firebase'den bütçeleri al
         fetchBudgetsFromFirebase()
-        fetchUserPreferencesFromFirebase()
-
         // Butonları animasyonla
         animateButton(binding.btnIncome, true)
         animateButton(binding.btnOutcome, false)
 
+        //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
+        childId?.let { id ->
+            fetchChildAttributeById(id, "balance") { balance ->
+                balance?.let { availableBalance ->
+                    binding.availableBalance.text = availableBalance
+                }
+
+            }
+        }
+
+        /*
+        fetchParentAttributes(childId, "firstName") { fullName ->
+            fullName?.let {
+                println("Ebeveyn Adı: $it")
+            } ?: println("Çocuk için ebeveyn adı bulunamadı.")
+        }*/
+
         return view
     }
 
-    private fun fetchUserPreferencesFromFirebase() {
-        val currentUser = auth.currentUser
-        currentUser?.let { user ->
-            val userId = user.uid
-            val userRef = databaseReference.child(userId)
 
-            userRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                override fun onDataChange(dataSnapshot: DataSnapshot) {
-                    if (dataSnapshot.exists()) {
-                        val userData = dataSnapshot.getValue(User::class.java)
-                        if (userData != null) {
-                            val currency = userData.currency
-                            val balance = userData.balance
-
-                            updateUI(balance, currency)
-                        } else {
-                            Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
-                        }
-                    } else {
-                        Toast.makeText(requireContext(), "User data not found", Toast.LENGTH_SHORT).show()
-                    }
+    private fun fetchParentAttributes(
+        childId: String,
+        attributeName: String,
+        onAttributesFetched: (attributes: String?) -> Unit
+    ) {
+        fetchChildAttributeById(childId, "parentMail") { parentMail ->
+            parentMail?.let { mail ->
+                fetchUserByParentEmail(mail, attributeName) { attribute ->
+                    onAttributesFetched(attribute)
                 }
-
-                override fun onCancelled(databaseError: DatabaseError) {
-                    // Handle database error
-                    Toast.makeText(requireContext(), "Failed to fetch user data", Toast.LENGTH_SHORT).show()
-                }
-            })
+            } ?: onAttributesFetched(null)
         }
     }
 
-    private fun updateUI(availableBalance: String, currency:String) {
-        // Set available balance with currency symbol
-        binding.availableBalance.text = availableBalance
-        val currencySymbol = Currency.valueOf(currency).symbol
-        // Set currency symbol
-        binding.currency.text = currencySymbol
+
+    private fun fetchChildAttributeById(
+        childId: String,
+        attribute: String,
+        callback: (String?) -> Unit
+    ) {
+        val database = FirebaseDatabase.getInstance().reference
+        val childRef = database.child("child").child(childId)
+
+        childRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                if (dataSnapshot.exists()) {
+                    val attributeValue = dataSnapshot.child(attribute).getValue(String::class.java)
+                    callback(attributeValue)
+                } else {
+                    // Veri bulunamadığında null değer döndür
+                    callback(null)
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Hata durumunda yapılacak işlemler
+                callback(null)
+            }
+        })
+    }
+
+
+    private fun fetchUserByParentEmail(
+        parentEmail: String,
+        attribute: String,
+        callback: (String?) -> Unit
+    ) {
+        val database = FirebaseDatabase.getInstance().reference
+        val usersRef = database.child("users")
+
+        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                for (userSnapshot in dataSnapshot.children) {
+                    val userEmail = userSnapshot.child("email").getValue(String::class.java)
+                    if (userEmail == parentEmail) {
+                        // Belirli bir parent email adresine sahip kullanıcıyı bulduk
+                        val attributeValue =
+                            userSnapshot.child(attribute).getValue(String::class.java)
+                        callback(attributeValue)
+                        return
+                    }
+                }
+                // Belirli bir parent email adresine sahip kullanıcı bulunamadı
+                callback(null)
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // Hata durumunda yapılacak işlemler
+                callback(null)
+            }
+        })
     }
 
     //Budgetleri firebase çeken fonksiyon
     private fun fetchBudgetsFromFirebase() {
-        // Kullanıcı kimliğini al
-        val userId = auth.currentUser?.uid
-        userId?.let { uid ->
+        childId?.let { uid ->
             databaseReference.child(uid).child("budgets")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -158,6 +211,7 @@ class HomeFragment : Fragment() {
         }
     }
 
+
     //PieChart'ı oluşturan fonksiyon
     private fun createPieChart(): PieChart {
         // Pasta grafiğini oluştur
@@ -199,6 +253,7 @@ class HomeFragment : Fragment() {
         pieChart.invalidate()
     }
 
+
     private fun animateButton(button: Button, isSelected: Boolean) {
         // Butonun seçili durumunu güncelle
         button.isSelected = isSelected
@@ -219,4 +274,5 @@ class HomeFragment : Fragment() {
         animatorSet.duration = 300
         animatorSet.start()
     }
+
 }

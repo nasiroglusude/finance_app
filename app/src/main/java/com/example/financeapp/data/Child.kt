@@ -8,7 +8,8 @@ data class Child(
     val parentMail: String,
     val password: String,
     val creationDate: String?,
-    val children: Boolean
+    val balance: String,
+    val currency: String = "",
 )
 
 

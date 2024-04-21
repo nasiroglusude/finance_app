@@ -1,3 +1,5 @@
+import android.content.Context
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -6,7 +8,11 @@ import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu.ChildControlActivity
+import com.example.financeapp.activity.menu_child.ChildNewBudgetActivity
 import com.example.financeapp.data.User
+import com.google.android.material.button.MaterialButton
+import java.io.Serializable
 
 class KidsAdapter(
     private val list: MutableList<User>,
@@ -22,6 +28,7 @@ class KidsAdapter(
         val textViewFullName: TextView = itemView.findViewById(R.id.tvFirstName)
         val textViewPassword: TextView = itemView.findViewById(R.id.tvPassword)
         val btnDelete: TextView = itemView.findViewById(R.id.btnDeleteChild)
+        val btnSeeDetails: MaterialButton = itemView.findViewById(R.id.btnDetails)
     }
 
     // ViewHolder oluşturulduğunda çağrılan metot
@@ -44,6 +51,11 @@ class KidsAdapter(
         holder.btnDelete.setOnClickListener {
             listener.onDeleteChildClick(position)
         }
+
+        holder.btnSeeDetails.setOnClickListener{
+            val childId = user.id
+            navigateToActivityWithExtra(holder.itemView.context, ChildControlActivity::class.java, "childId", childId)
+        }
     }
 
     // Listede bulunan eleman sayısını döndüren metot
@@ -57,4 +69,10 @@ class KidsAdapter(
         list.addAll(newList)
         notifyDataSetChanged()
     }
+    fun navigateToActivityWithExtra(context: Context, targetActivity: Class<*>, extraKey: String, extraValue: String) {
+        val intent = Intent(context, targetActivity)
+        intent.putExtra(extraKey, extraValue)
+        context.startActivity(intent)
+    }
+
 }

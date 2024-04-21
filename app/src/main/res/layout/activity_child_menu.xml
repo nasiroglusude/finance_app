@@ -28,7 +28,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="60dp"
                 android:background="@color/white"
-                app:menu="@menu/bottom_nav_menu" />
+                app:menu="@menu/child_nav_menu" />
 
             <com.google.android.material.floatingactionbutton.FloatingActionButton
                 android:id="@+id/btnAdd"
