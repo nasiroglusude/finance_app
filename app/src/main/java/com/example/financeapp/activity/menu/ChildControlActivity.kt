@@ -1,17 +1,13 @@
 package com.example.financeapp.activity.menu
 
 import android.os.Bundle
-import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.EditText
-import android.widget.Toast
 import androidx.appcompat.app.AlertDialog
 import androidx.appcompat.app.AppCompatActivity
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financeapp.R
 import com.example.financeapp.adapter.ExpenseBudgetAdapter
-import com.example.financeapp.data.Budget
+import com.example.financeapp.model.Budget
 import com.example.financeapp.databinding.ActivityChildControlBinding
 import com.example.financeapp.databinding.DialogPocketMoneyBinding
 import com.example.financeapp.enums.Currency
@@ -100,7 +96,8 @@ class ChildControlActivity : AppCompatActivity() {
                             // Budget is an Expense, extract title and amount
                             val expenseAttributes = mutableMapOf<String, Any?>(
                                 "title" to budget.title,
-                                "amount" to budget.amount
+                                "amount" to budget.amount,
+                                "currency" to budget.currency
                             )
                             expenseBudgets.add(expenseAttributes)
                         }

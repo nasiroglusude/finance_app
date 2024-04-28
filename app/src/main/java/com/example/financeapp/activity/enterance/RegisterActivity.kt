@@ -16,7 +16,7 @@ import com.google.android.material.datepicker.MaterialDatePicker
 import java.util.*
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.R
-import com.example.financeapp.data.User
+import com.example.financeapp.model.User
 import com.example.financeapp.databinding.ActivityRegisterBinding
 import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth

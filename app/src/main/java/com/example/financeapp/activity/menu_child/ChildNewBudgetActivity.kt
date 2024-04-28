@@ -10,12 +10,11 @@ import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
-import com.example.financeapp.activity.menu_child.navigation.ChildHomeFragment
 import com.example.financeapp.adapter.CategoryAdapter
 import com.example.financeapp.databinding.ActivityNewBudgetBinding
 import com.example.financeapp.enums.Currency
-import com.example.financeapp.data.Budget
-import com.example.financeapp.data.Category
+import com.example.financeapp.model.Budget
+import com.example.financeapp.model.Category
 import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.databinding.DialogAddCategoryBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -24,6 +23,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class ChildNewBudgetActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewBudgetBinding
@@ -190,6 +192,7 @@ class ChildNewBudgetActivity : AppCompatActivity() {
             val type = if (radioButtonId == binding.incomeRadioButton.id) "Income" else "Expense"
             val selectedCategory = binding.categorySpinner.selectedItem as? Category
             val categoryName = selectedCategory?.title ?: ""
+            val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
 
             val budget = Budget(
                 budgetId ?: "",
@@ -198,7 +201,8 @@ class ChildNewBudgetActivity : AppCompatActivity() {
                 color,
                 currency,
                 type,
-                categoryName
+                categoryName,
+                currentDateString
             )
 
             FirebaseDatabase.getInstance().reference.child("child").child(uid)

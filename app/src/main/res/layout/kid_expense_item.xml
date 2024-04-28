@@ -6,27 +6,50 @@
     android:layout_marginBottom="20dp"
     android:background="@drawable/rounded_rectangle"
     android:elevation="4dp"
-    android:orientation="vertical"
-    android:padding="30dp">
+    android:orientation="vertical">
 
-    <TextView
-        android:id="@+id/tvExpenseTitle"
+    <RelativeLayout
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentStart="true"
         android:layout_centerInParent="true"
-        android:fontFamily="@font/kanit"
-        android:textAppearance="?android:textAppearanceMedium"
-        android:textSize="20sp" />
+        android:layout_margin="30dp">
+        <TextView
+            android:id="@+id/tvExpenseTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentStart="true"
+            android:layout_centerInParent="true"
+            android:fontFamily="@font/kanit"
+            android:text="ABCD"
+            android:textAppearance="?android:textAppearanceMedium"
+            android:textSize="20sp" />
 
-    <TextView
-        android:id="@+id/tvPriceTitle"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_centerInParent="true"
-        android:fontFamily="@font/lora"
-        android:textAppearance="?android:textAppearanceSmall"
-        android:textSize="20sp" />
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentEnd="true"
+            android:layout_centerInParent="true">
+
+            <TextView
+                android:id="@+id/tvPriceTitle"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/lora"
+                android:text="ABCD"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textSize="20sp" />
+
+            <TextView
+                android:id="@+id/tvPriceCurrency"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+
+                android:fontFamily="@font/lora"
+                android:text="tl"
+                android:textAppearance="?android:textAppearanceSmall"
+                android:textSize="20sp" />
+        </LinearLayout>
+    </RelativeLayout>
+
 
 </RelativeLayout>

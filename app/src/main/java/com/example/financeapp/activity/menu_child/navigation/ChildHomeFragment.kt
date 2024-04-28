@@ -2,7 +2,6 @@ package com.example.financeapp.activity.menu_child.navigation
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
-import android.content.Intent
 import android.graphics.Color
 import android.graphics.Typeface
 import android.os.Bundle
@@ -10,32 +9,46 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
-import androidx.appcompat.app.AppCompatActivity
+import android.widget.Toast
 import androidx.core.content.ContextCompat
-import androidx.databinding.DataBindingUtil.bind
-import androidx.databinding.DataBindingUtil.setContentView
 import androidx.fragment.app.Fragment
+import androidx.recyclerview.widget.LinearSnapHelper
+import androidx.recyclerview.widget.RecyclerView
+import androidx.recyclerview.widget.SnapHelper
 import com.example.financeapp.R
-import com.example.financeapp.activity.menu_child.ChildNewBudgetActivity
-import com.example.financeapp.data.Budget
+import com.example.financeapp.adapter.HorizontalCalendarAdapter
+import com.example.financeapp.model.Budget
+import com.example.financeapp.model.DateCalendar
 import com.example.financeapp.databinding.ActivityControlledChildBinding
 import com.github.mikephil.charting.charts.PieChart
 import com.github.mikephil.charting.data.PieData
 import com.github.mikephil.charting.data.PieDataSet
 import com.github.mikephil.charting.data.PieEntry
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import com.google.firebase.ktx.Firebase
+import java.text.SimpleDateFormat
+import java.util.Calendar
+import java.util.Date
+import java.util.Locale
 
-class ChildHomeFragment : Fragment() {
+class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener {
 
     private lateinit var binding: ActivityControlledChildBinding
     private lateinit var auth: FirebaseAuth
     private var childId: String? = null
     private lateinit var databaseReference: DatabaseReference
+
+    private val sdf = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
+    private val cal = Calendar.getInstance(Locale.ENGLISH)
+    private val dates = ArrayList<Date>()
+    private lateinit var adapter: HorizontalCalendarAdapter
+    private val calendarList2 = ArrayList<DateCalendar>()
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -46,16 +59,9 @@ class ChildHomeFragment : Fragment() {
         val view = binding.root
 
         databaseReference = FirebaseDatabase.getInstance().reference.child("child")
+        auth = Firebase.auth
 
         childId = arguments?.getString("childId")
-
-
-        // Firebase'den bütçeleri al
-        fetchBudgetsFromFirebase()
-        // Butonları animasyonla
-        animateButton(binding.btnIncome, true)
-        animateButton(binding.btnOutcome, false)
-
         //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
         childId?.let { id ->
             fetchChildAttributeById(id, "balance") { balance ->
@@ -66,31 +72,29 @@ class ChildHomeFragment : Fragment() {
             }
         }
 
-        /*
-        fetchParentAttributes(childId, "firstName") { fullName ->
-            fullName?.let {
-                println("Ebeveyn Adı: $it")
-            } ?: println("Çocuk için ebeveyn adı bulunamadı.")
-        }*/
+        animateButton(binding.btnIncome, true)
+        animateButton(binding.btnOutcome, false)
+
+        val tvMonth = setUpCalendarAdapter(binding.recyclerView, this@ChildHomeFragment)
+        binding.tvDateMonth.text = tvMonth
+        fetchBudgetsFromFirebase(tvMonth)
+
+        setUpCalendarPrevNextClickListener(binding.ivCalendarNext, binding.ivCalendarPrevious) { selectedMonthYear ->
+            // Callback when month changes
+            // Update UI with the selected month and year
+            binding.tvDateMonth.text = selectedMonthYear
+            println(selectedMonthYear)
+            // Fetch budgets again based on the selected month and year
+            fetchBudgetsFromFirebase(selectedMonthYear)
+        }
 
         return view
     }
 
-
-    private fun fetchParentAttributes(
-        childId: String,
-        attributeName: String,
-        onAttributesFetched: (attributes: String?) -> Unit
-    ) {
-        fetchChildAttributeById(childId, "parentMail") { parentMail ->
-            parentMail?.let { mail ->
-                fetchUserByParentEmail(mail, attributeName) { attribute ->
-                    onAttributesFetched(attribute)
-                }
-            } ?: onAttributesFetched(null)
-        }
+    override fun onItemClick(ddMmYy: String, dd: String, day: String) {
+        val selectedDate = "$day $dd, $ddMmYy"
+        Toast.makeText(requireContext(), "Selected Date: $selectedDate", Toast.LENGTH_SHORT).show()
     }
-
 
     private fun fetchChildAttributeById(
         childId: String,
@@ -118,40 +122,9 @@ class ChildHomeFragment : Fragment() {
         })
     }
 
-
-    private fun fetchUserByParentEmail(
-        parentEmail: String,
-        attribute: String,
-        callback: (String?) -> Unit
-    ) {
-        val database = FirebaseDatabase.getInstance().reference
-        val usersRef = database.child("users")
-
-        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (userSnapshot in dataSnapshot.children) {
-                    val userEmail = userSnapshot.child("email").getValue(String::class.java)
-                    if (userEmail == parentEmail) {
-                        // Belirli bir parent email adresine sahip kullanıcıyı bulduk
-                        val attributeValue =
-                            userSnapshot.child(attribute).getValue(String::class.java)
-                        callback(attributeValue)
-                        return
-                    }
-                }
-                // Belirli bir parent email adresine sahip kullanıcı bulunamadı
-                callback(null)
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Hata durumunda yapılacak işlemler
-                callback(null)
-            }
-        })
-    }
-
     //Budgetleri firebase çeken fonksiyon
-    private fun fetchBudgetsFromFirebase() {
+    private fun fetchBudgetsFromFirebase(selectedMonthYear: String) {
+        // Kullanıcı kimliğini al
         childId?.let { uid ->
             databaseReference.child(uid).child("budgets")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -163,44 +136,59 @@ class ChildHomeFragment : Fragment() {
                         val incomeColors = mutableListOf<String>()
                         val outcomeColors = mutableListOf<String>()
 
-
                         // Bütün bütçeleri döngüye al
                         for (budgetSnapshot in snapshot.children) {
                             // Budget nesnesini al
                             val budget = budgetSnapshot.getValue(Budget::class.java)
                             budget?.let {
-                                if (it.type == "Income") {
-                                    incomeLabels.add(it.title)
-                                    incomes.add(it.amount.toDouble())
-                                    incomeColors.add(it.color)
-
-                                } else {
-                                    outcomeLabels.add(it.title)
-                                    outcomes.add(it.amount.toDouble())
-                                    outcomeColors.add(it.color)
-
+                                // Get the creation date
+                                val creationDate = it.creationDate // String olarak alınan tarih
+                                val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // String'i Date'e dönüştürmek için format belirle
+                                val date = dateFormat.parse(creationDate) ?: Date() // String tarihi Date'e dönüştür
+                                val calendar = Calendar.getInstance()
+                                calendar.time = date
+                                val dateFormat2 = SimpleDateFormat("MMMM", Locale.getDefault())
+                                val monthName = dateFormat2.format(calendar.time) // Ay ismini al
+                                val year = calendar.get(Calendar.YEAR)
+                                val budgetDate = "$monthName $year"
+                                println(budgetDate)
+                                if (budgetDate == selectedMonthYear) {
+                                    if (it.type == "Income") {
+                                        incomeLabels.add(it.title)
+                                        incomes.add(it.amount.toDouble())
+                                        incomeColors.add(it.color)
+                                    } else {
+                                        outcomeLabels.add(it.title)
+                                        outcomes.add(it.amount.toDouble())
+                                        outcomeColors.add(it.color)
+                                    }
                                 }
                             }
                         }
 
-                        // Pasta grafiği oluştur
-                        val pieChart = createPieChart()
+                        // Eğer hiç veri yoksa, grafikleri temizle
+                        if (incomeLabels.isEmpty() && outcomeLabels.isEmpty()) {
+                            clearChart()
+                        } else {
+                            // Veriler mevcutsa, pasta grafiği oluştur ve göster
+                            val pieChart = createPieChart()
 
-                        // Verileri pasta grafiğinde göster
-                        updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
-                        binding.chartContainer.addView(pieChart)
-
-                        // Set up button click listeners to switch between income and expense data
-                        binding.btnIncome.setOnClickListener {
-                            animateButton(binding.btnIncome, true)
-                            animateButton(binding.btnOutcome, false)
+                            // Verileri pasta grafiğinde göster
                             updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
-                        }
+                            binding.chartContainer.addView(pieChart)
 
-                        binding.btnOutcome.setOnClickListener {
-                            animateButton(binding.btnIncome, false)
-                            animateButton(binding.btnOutcome, true)
-                            updatePieChartDataSet(pieChart, outcomeLabels, outcomes, outcomeColors)
+                            // Set up button click listeners to switch between income and expense data
+                            binding.btnIncome.setOnClickListener {
+                                animateButton(binding.btnIncome, true)
+                                animateButton(binding.btnOutcome, false)
+                                updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
+                            }
+
+                            binding.btnOutcome.setOnClickListener {
+                                animateButton(binding.btnIncome, false)
+                                animateButton(binding.btnOutcome, true)
+                                updatePieChartDataSet(pieChart, outcomeLabels, outcomes, outcomeColors)
+                            }
                         }
                     }
 
@@ -221,6 +209,9 @@ class ChildHomeFragment : Fragment() {
             ViewGroup.LayoutParams.MATCH_PARENT
         )
         return pieChart
+    }
+    private fun clearChart() {
+        binding.chartContainer.removeAllViews()
     }
 
     //Pie Chartı verilen label-value ve color değerlerine göre güncelleyen fonksiyon
@@ -273,6 +264,67 @@ class ChildHomeFragment : Fragment() {
         animatorSet.playTogether(scaleX, scaleY)
         animatorSet.duration = 300
         animatorSet.start()
+    }
+
+
+    private fun setUpCalendarPrevNextClickListener(
+        ivCalendarNext: Button,
+        ivCalendarPrevious: Button,
+        onMonthChanged: (String) -> Unit
+    ) {
+        ivCalendarNext.setOnClickListener {
+            cal.add(Calendar.MONTH, 1)
+            handleCalendarNavigation(onMonthChanged)
+        }
+
+        ivCalendarPrevious.setOnClickListener {
+            cal.add(Calendar.MONTH, -1)
+            handleCalendarNavigation(onMonthChanged)
+        }
+    }
+    private fun handleCalendarNavigation(onMonthChanged: (String) -> Unit) {
+        val selectedMonthYear = sdf.format(cal.time)
+        onMonthChanged.invoke(selectedMonthYear)
+    }
+
+    /*
+     * Setting up adapter for recyclerview
+     */
+    private fun setUpCalendarAdapter(recyclerView: RecyclerView, listener : HorizontalCalendarAdapter.OnItemClickListener) : String {
+        val snapHelper: SnapHelper = LinearSnapHelper()
+        snapHelper.attachToRecyclerView(recyclerView)
+
+        adapter = HorizontalCalendarAdapter { calendarDateModel: DateCalendar, position: Int ->
+            calendarList2.forEachIndexed { index, calendarModel ->
+                calendarModel.isSelected = index == position
+            }
+        }
+        adapter.setData(calendarList2)
+        adapter.setOnItemClickListener(listener)
+        recyclerView.adapter = adapter
+
+        return setUpCalendar(listener)
+    }
+
+    /*
+     * Function to setup calendar for every month
+     */
+    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
+        val calendarList = ArrayList<DateCalendar>()
+        val monthCalendar = cal.clone() as Calendar
+        val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)
+        dates.clear()
+        monthCalendar.set(Calendar.DAY_OF_MONTH, 1)
+        while (dates.size < maxDaysInMonth) {
+            dates.add(monthCalendar.time)
+            calendarList.add(DateCalendar(monthCalendar.time))
+            monthCalendar.add(Calendar.DAY_OF_MONTH, 1)
+        }
+        calendarList2.clear()
+        calendarList2.addAll(calendarList)
+        adapter.setOnItemClickListener(listener)
+        adapter.setData(calendarList)
+        return sdf.format(cal.time)
     }
 
 }

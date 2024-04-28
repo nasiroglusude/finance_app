@@ -23,7 +23,7 @@ class CurrencyAdapter(context: Context, resource: Int, private val currencies: L
         val inflater = context.getSystemService(Context.LAYOUT_INFLATER_SERVICE) as LayoutInflater
         val view = convertView ?: inflater.inflate(android.R.layout.simple_spinner_dropdown_item, parent, false)
 
-        val currencyNameAndSymbol = "${currencies[position].displayName} (${currencies[position].symbol})"
+        val currencyNameAndSymbol = "${currencies[position].code} (${currencies[position].symbol})"
         view.findViewById<TextView>(android.R.id.text1).text = currencyNameAndSymbol
 
         return view

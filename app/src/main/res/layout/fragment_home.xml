@@ -1,231 +1,296 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    xmlns:tools="http://schemas.android.com/tools"
     android:background="@drawable/background"
     android:padding="30dp">
+
     <RelativeLayout
-        android:id="@+id/personalInfo"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:orientation="horizontal">
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:id="@+id/personalInfo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="horizontal">
 
             <TextView
                 android:id="@+id/tvAvailableBalance"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
                 android:layout_alignParentStart="true"
-                android:textSize="30sp"
+                android:layout_alignParentTop="true"
                 android:fontFamily="@font/kanit"
                 android:text="@string/available_balance"
-                android:textColor="#657A81"/>
+                android:textColor="#657A81"
+                android:textSize="30sp" />
+
             <LinearLayout
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_below="@+id/tvAvailableBalance"
                 android:orientation="horizontal">
+
                 <TextView
                     android:id="@+id/availableBalance"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
                     android:fontFamily="@font/kanit"
-                    android:textColor="@color/black"/>
+                    android:textColor="@color/black"
+                    android:textSize="30sp" />
+
                 <TextView
                     android:id="@+id/currency"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:textSize="30sp"
-                    android:text="₺"
                     android:fontFamily="@font/kanit"
-                    android:textColor="@color/black"/>
+                    android:text="₺"
+                    android:textColor="@color/black"
+                    android:textSize="30sp" />
             </LinearLayout>
 
             <ImageButton
                 android:layout_width="75dp"
                 android:layout_height="75dp"
-                android:background="@android:color/transparent"
-                android:layout_marginTop="20dp"
-                android:src="@drawable/profile_big"
                 android:layout_alignParentTop="true"
                 android:layout_alignParentEnd="true"
-                android:layout_centerVertical="true"/>
-    </RelativeLayout>
-
-    <LinearLayout
-        android:id="@+id/menuButtons"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/personalInfo"
-        android:orientation="horizontal"
-        android:layout_marginTop="20dp"
-        android:weightSum="4">
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/imageView"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:background="@drawable/oval_shape"
-                android:src="@drawable/debts"
+                android:layout_centerVertical="true"
                 android:layout_marginTop="20dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true">
-            </ImageButton>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageView"
-                android:textSize="15sp"
-                android:fontFamily="@font/lora"
-                android:layout_centerHorizontal="true"
-                android:text="@string/debts"
-                android:textColor="@color/black"/>
+                android:background="@android:color/transparent"
+                android:src="@drawable/profile_big" />
         </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/imageButtonSavings"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:background="@drawable/oval_shape"
-                android:src="@drawable/savings"
-                android:layout_marginTop="20dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true">
-            </ImageButton>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageButtonSavings"
-                android:textSize="15sp"
-                android:fontFamily="@font/lora"
-                android:layout_centerHorizontal="true"
-                android:text="@string/savings"
-                android:textColor="@color/black"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/imageButtonPayments"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:background="@drawable/oval_shape"
-                android:src="@drawable/payments"
-                android:layout_marginTop="20dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true">
-            </ImageButton>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageButtonPayments"
-                android:textSize="15sp"
-                android:fontFamily="@font/lora"
-                android:layout_centerHorizontal="true"
-
-                android:text="@string/payments"
-                android:textColor="@color/black"/>
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:layout_width="0dp"
-            android:layout_weight="1"
-            android:layout_height="wrap_content">
-            <ImageButton
-                android:id="@+id/imageButtonMore"
-                android:layout_width="65dp"
-                android:layout_height="65dp"
-                android:background="@drawable/oval_shape"
-                android:src="@drawable/more"
-                android:layout_marginTop="20dp"
-                android:layout_alignParentTop="true"
-                android:layout_centerHorizontal="true"
-                android:layout_centerVertical="true">
-            </ImageButton>
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_below="@id/imageButtonMore"
-                android:textSize="15sp"
-                android:fontFamily="@font/lora"
-                android:layout_centerHorizontal="true"
-                android:text="@string/more"
-                android:textColor="@color/black"/>
-        </RelativeLayout>
-
-    </LinearLayout>
-
-    <RelativeLayout
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="50dp"
-        android:layout_below="@+id/menuButtons">
-
-        <TextView
-            android:id="@+id/tvRecentTransactions"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:layout_alignParentStart="true"
-            android:textSize="30sp"
-            android:fontFamily="@font/kanit"
-            android:text="@string/recent_transactions"
-            android:textColor="@color/black"/>
 
         <LinearLayout
-            android:id="@+id/buttonContainer"
+            android:id="@+id/menuButtons"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@id/tvRecentTransactions"
-            android:layout_marginTop="10dp"
-            android:gravity="center"
-            >
-            <Button
-                android:id="@+id/btnIncome"
-                android:layout_width="125dp"
-                android:fontFamily="@font/kanit"
-                android:textColor="@color/black"
-                android:layout_height="wrap_content"
-                android:text="@string/incomes"
-                android:background="@drawable/outlined_button_background"
-                />
+            android:layout_below="@+id/personalInfo"
+            android:layout_marginTop="20dp"
+            android:orientation="horizontal"
+            android:weightSum="4">
 
-            <Button
-                android:id="@+id/btnOutcome"
-                android:layout_width="125dp"
-                android:fontFamily="@font/kanit"
-                android:textColor="@color/black"
+            <RelativeLayout
+                android:layout_width="0dp"
                 android:layout_height="wrap_content"
-                android:text="@string/outcomes"
-                android:background="@drawable/filled_button_background"
-                />
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/imageView"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/oval_shape"
+                    android:src="@drawable/debts"></ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageView"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/lora"
+                    android:text="@string/debts"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/imageButtonSavings"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/oval_shape"
+                    android:src="@drawable/savings"></ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageButtonSavings"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/lora"
+                    android:text="@string/savings"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/imageButtonPayments"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/oval_shape"
+                    android:src="@drawable/payments"></ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageButtonPayments"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/lora"
+                    android:text="@string/payments"
+
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1">
+
+                <ImageButton
+                    android:id="@+id/imageButtonMore"
+                    android:layout_width="65dp"
+                    android:layout_height="65dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_centerHorizontal="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginTop="20dp"
+                    android:background="@drawable/oval_shape"
+                    android:src="@drawable/more"></ImageButton>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/imageButtonMore"
+                    android:layout_centerHorizontal="true"
+                    android:fontFamily="@font/lora"
+                    android:text="@string/more"
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+            </RelativeLayout>
+
         </LinearLayout>
 
         <RelativeLayout
-            android:id="@+id/chartContainer"
-            android:layout_width="wrap_content"
+            android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/buttonContainer">
+            android:layout_below="@+id/menuButtons"
+            android:layout_marginTop="30dp">
+
+            <TextView
+                android:id="@+id/tvRecentTransactions"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentStart="true"
+                android:layout_alignParentTop="true"
+                android:fontFamily="@font/kanit"
+                android:text="@string/recent_transactions"
+                android:textColor="@color/black"
+                android:textSize="30sp" />
+
+            <RelativeLayout
+                android:id="@+id/dateCalendar"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/tvRecentTransactions">
+
+                <Button
+                    android:id="@+id/iv_calendar_previous"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentStart="true"
+                    android:layout_alignParentTop="true"
+                    android:background="@drawable/left_arrow"
+                    android:padding="20dp" />
+
+                <Button
+                    android:id="@+id/iv_calendar_next"
+                    android:layout_width="50dp"
+                    android:layout_height="50dp"
+                    android:layout_alignParentTop="true"
+                    android:layout_alignParentEnd="true"
+                    android:background="@drawable/right_arrow"
+                    android:padding="20dp" />
+
+                <TextView
+                    android:id="@+id/tv_date_month"
+                    style="@style/TextAppearance.MaterialComponents.Subtitle2"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:textColor="@color/black"
+                    android:textSize="18sp"
+                    tools:text="December 2020" />
+
+                <androidx.recyclerview.widget.RecyclerView
+                    android:id="@+id/recyclerView"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_below="@id/tv_date_month"
+                    android:layout_margin="10dp"
+                    android:orientation="horizontal"
+                    app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"
+                    tools:listitem="@layout/date_layout" />
+
+            </RelativeLayout>
+
+            <LinearLayout
+                android:id="@+id/buttonContainer"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_below="@id/dateCalendar"
+                android:layout_marginTop="10dp"
+                android:gravity="center">
+
+                <Button
+                    android:id="@+id/btnIncome"
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/outlined_button_background"
+                    android:fontFamily="@font/kanit"
+                    android:text="@string/incomes"
+                    android:textColor="@color/black" />
+
+                <Button
+                    android:id="@+id/btnOutcome"
+                    android:layout_width="125dp"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/filled_button_background"
+                    android:fontFamily="@font/kanit"
+                    android:text="@string/outcomes"
+                    android:textColor="@color/black" />
+
+
+            </LinearLayout>
+
+            <RelativeLayout
+                android:id="@+id/chartContainer"
+                android:layout_marginTop="10dp"
+                android:layout_centerInParent="true"
+                android:layout_width="370dp"
+                android:layout_height="370dp"
+                android:layout_below="@+id/buttonContainer">
+
+            </RelativeLayout>
+
+
 
         </RelativeLayout>
-
-
     </RelativeLayout>
 
-
 </RelativeLayout>
+

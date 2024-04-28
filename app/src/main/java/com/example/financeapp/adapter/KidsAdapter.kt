@@ -3,16 +3,12 @@ import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.Button
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financeapp.R
 import com.example.financeapp.activity.menu.ChildControlActivity
-import com.example.financeapp.activity.menu_child.ChildNewBudgetActivity
-import com.example.financeapp.data.User
+import com.example.financeapp.model.User
 import com.google.android.material.button.MaterialButton
-import java.io.Serializable
 
 class KidsAdapter(
     private val list: MutableList<User>,

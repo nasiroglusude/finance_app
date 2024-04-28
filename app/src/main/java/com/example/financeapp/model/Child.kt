@@ -1,4 +1,4 @@
-package com.example.financeapp.data
+package com.example.financeapp.model
 
 data class Child(
     val id: String,
@@ -9,7 +9,7 @@ data class Child(
     val password: String,
     val creationDate: String?,
     val balance: String,
-    val currency: String = "",
+    val currency: String,
 )
 
 

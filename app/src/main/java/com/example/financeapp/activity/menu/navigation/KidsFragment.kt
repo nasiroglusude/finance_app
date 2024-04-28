@@ -8,8 +8,8 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.financeapp.data.Child
-import com.example.financeapp.data.User
+import com.example.financeapp.model.Child
+import com.example.financeapp.model.User
 import com.example.financeapp.databinding.DialogAddChildBinding
 import com.example.financeapp.databinding.FragmentKidsBinding
 import com.example.financeapp.enums.Currency

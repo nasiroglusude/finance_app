@@ -6,7 +6,7 @@ import android.widget.Toast
 import androidx.appcompat.app.AppCompatActivity
 import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.adapter.CurrencyAdapter
-import com.example.financeapp.data.User
+import com.example.financeapp.model.User
 import com.example.financeapp.databinding.ActivityUserPreferencesBinding
 import com.example.financeapp.enums.Currency
 import com.google.firebase.auth.FirebaseAuth
@@ -24,9 +24,7 @@ class UserPreferencesActivity : AppCompatActivity() {
     private val currentUser = FirebaseAuth.getInstance().currentUser
     private var isDropdownVisible = false
     private lateinit var database: DatabaseReference
-    private val preferencesRef: DatabaseReference by lazy {
-        FirebaseDatabase.getInstance().getReference("users").child(currentUser?.uid ?: "")
-    }
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

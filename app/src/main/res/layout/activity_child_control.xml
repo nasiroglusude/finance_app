@@ -124,23 +124,19 @@
     </RelativeLayout>
 
     <androidx.core.widget.NestedScrollView
+        android:id="@+id/scrollView"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_below="@id/childExpense"
         app:layout_behavior="@string/appbar_scrolling_view_behavior">
 
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:padding="20dp">
 
-            <androidx.recyclerview.widget.RecyclerView
-                android:id="@+id/childrenList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                />
-        </LinearLayout>
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/childrenList"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="20dp" />
+
 
     </androidx.core.widget.NestedScrollView>
 
@@ -150,11 +146,12 @@
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
         android:layout_margin="20dp"
-        android:layout_marginTop="50dp"
+        android:layout_marginTop="100dp"
         android:backgroundTint="@color/purple_200"
         android:fontFamily="@font/kanit"
         android:text="@string/add_pocket_money"
         android:textColor="@color/black"
         android:textSize="20sp" />
+
 
 </RelativeLayout>

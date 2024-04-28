@@ -5,7 +5,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.ArrayAdapter
 import android.widget.TextView
-import com.example.financeapp.data.Category
+import com.example.financeapp.model.Category
 
 class CategoryAdapter(context: Context, categories: List<Category>) :
     ArrayAdapter<Category>(context, 0, categories) {

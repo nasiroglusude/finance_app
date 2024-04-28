@@ -61,5 +61,19 @@
     <string name="continue_register">Devam Et</string>
     <string name="starting_preferences">Başlangıç tercihlerini belirle</string>
     <string name="pocket_money">Harçlık</string>
+    <string name="currency_converter">Birimi Çevirici</string>
+    <string name="convert_from">Kaynak Birim</string>
+    <string name="convert_to">Hedef Birim</string>
+    <string name="select_currency">Seçilen Birim</string>
+    <string name="amount_to_convert">Çevrilecek Miktar</string>
+    <string name="conversion_rate">Çevirme Oranı</string>
+    <string name="convert">Çevir</string>
+    <string name="exchange_amount">Çevirilecek Miktar</string>
+    <string name="settings">Ayarlar</string>
+    <string name="main_currency">Ana Para Birimi</string>
+    <string name="dark_mode">Koyu Mod</string>
+    <string name="change_language">Dil</string>
+    <string name="logout">Çıkış Yap</string>
+    <string name="change_user_settings">Kullanıcı Ayarları</string>
 
 </resources>

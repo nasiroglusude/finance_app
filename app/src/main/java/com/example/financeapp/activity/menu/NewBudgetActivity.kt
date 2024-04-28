@@ -4,17 +4,19 @@ import android.app.Dialog
 import android.content.Context
 import android.content.Intent
 import android.graphics.Color
-import android.graphics.drawable.ColorDrawable
+import android.graphics.PorterDuff
 import android.os.Bundle
 import android.view.View
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.example.financeapp.R
 import com.example.financeapp.adapter.CategoryAdapter
 import com.example.financeapp.databinding.ActivityNewBudgetBinding
 import com.example.financeapp.enums.Currency
-import com.example.financeapp.data.Budget
-import com.example.financeapp.data.Category
+import com.example.financeapp.model.Budget
+import com.example.financeapp.model.Category
 import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.databinding.DialogAddCategoryBinding
 import com.google.firebase.auth.FirebaseAuth
@@ -23,6 +25,9 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.skydoves.colorpickerview.listeners.ColorEnvelopeListener
+import java.text.SimpleDateFormat
+import java.util.Date
+import java.util.Locale
 
 class NewBudgetActivity : AppCompatActivity() {
     private lateinit var binding: ActivityNewBudgetBinding
@@ -53,7 +58,6 @@ class NewBudgetActivity : AppCompatActivity() {
 
         }
 
-
         // Kategori spinner adaptörünü başlat
         categoryAdapter = CategoryAdapter(this, mutableListOf()) // Boş bir listeyle başlat
         binding.categorySpinner.adapter = categoryAdapter // Adaptörü ayarla
@@ -62,11 +66,18 @@ class NewBudgetActivity : AppCompatActivity() {
         binding.categorySpinner.onItemSelectedListener = object : AdapterView.OnItemSelectedListener {
             override fun onItemSelected(parent: AdapterView<*>?, view: View?, position: Int, id: Long) {
                 val selectedCategory = categoryAdapter.getItem(position)
+                // Get the Drawable from the View
                 val categoryColor = selectedCategory?.color
                 categoryColor?.let {
-                    binding.colorPreview.setBackgroundColor(Color.parseColor(it))
-                    val backgroundColor = (binding.colorPreview.background as? ColorDrawable)?.color
-                    println("Renk:" + backgroundColor)
+                    val circleDrawable = ContextCompat.getDrawable(this@NewBudgetActivity, R.drawable.circle_background)?.mutate()
+                    circleDrawable?.let { drawable ->
+                        // Change the color of the drawable
+                        val selectedColor = selectedCategory.color ?: "#000000" // Default color if null
+                        drawable.setColorFilter(Color.parseColor(selectedColor), PorterDuff.Mode.SRC_IN)
+
+                        // Set the modified drawable as the background of the View
+                        binding.colorPreview.background = drawable
+                    }
                 }
             }
 
@@ -74,7 +85,6 @@ class NewBudgetActivity : AppCompatActivity() {
                 // Bir şey seçilmediğinde işle
             }
         }
-
 
         val spinnerAdapter = ArrayAdapter(
             this,
@@ -178,22 +188,27 @@ class NewBudgetActivity : AppCompatActivity() {
                 .child("budgets").push().key
             val title = binding.title.text.toString()
             val amount = binding.amount.text.toString()
-            val color = "#" + Integer.toHexString((binding.colorPreview.background as? ColorDrawable)?.color ?: Color.BLACK)
+            val color = ContextCompat.getColor(this, R.color.black)
+            val hexColor = String.format("#%06X", 0xFFFFFF and color)
 
+            //println(hexColor)
             val currency = Currency.entries[binding.currencySpinner.selectedItemPosition].code
             val radioButtonId = binding.budgetTypeRadioGroup.checkedRadioButtonId
             val type = if (radioButtonId == binding.incomeRadioButton.id) "Income" else "Expense"
             val selectedCategory = binding.categorySpinner.selectedItem as? Category
             val categoryName = selectedCategory?.title ?: ""
+            val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+
 
             val budget = Budget(
                 budgetId ?: "",
                 title,
                 amount,
-                color,
+                hexColor,
                 currency,
                 type,
-                categoryName
+                categoryName,
+                currentDateString
             )
 
             FirebaseDatabase.getInstance().reference.child("users").child(uid)
@@ -206,6 +221,7 @@ class NewBudgetActivity : AppCompatActivity() {
                         // Hata durumunu ele al
                     }
                 }
+
         }
     }
     fun navigateToActivity(context: Context, targetActivity: Class<*>) {

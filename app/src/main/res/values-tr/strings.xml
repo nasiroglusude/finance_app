@@ -55,7 +55,25 @@
 <string name="add_category">New Category</string>
 <string name="add_pocket_money">Add Pocket Money</string>
 <string name="spending_label">%1$s\'s Spendings</string>
-
-
+<string name="enter_preferences">Enter Preferences</string>
+<string name="preferences">Preferences\n</string>
+<string name="starting_budget">Starting Budget</string>
+<string name="continue_register">Continue</string>
+<string name="starting_preferences">Choose starting settings</string>
+<string name="pocket_money">Pocket Money</string>
+<string name="currency_converter">Currency Converter</string>
+<string name="convert_from">Convert From</string>
+<string name="convert_to">Convert To</string>
+<string name="select_currency">Selected Currency</string>
+<string name="amount_to_convert">Conversion Amount</string>
+<string name="conversion_rate">Conversion Rate</string>
+<string name="convert">Convert</string>
+<string name="exchange_amount">Exchange Amount</string>
+<string name="settings">Settings</string>
+<string name="main_currency">Main Currency</string>
+<string name="dark_mode">Dark Mode</string>
+<string name="change_language">Language</string>
+<string name="logout">Log Out</string>
+<string name="change_user_settings">User Settings</string>
 
 </resources>

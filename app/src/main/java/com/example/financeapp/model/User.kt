@@ -1,4 +1,4 @@
-package com.example.financeapp.data
+package com.example.financeapp.model
 
 import com.google.firebase.database.IgnoreExtraProperties
 

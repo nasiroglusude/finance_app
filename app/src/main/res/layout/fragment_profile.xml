@@ -1,18 +1,167 @@
 <?xml version="1.0" encoding="utf-8"?>
-<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="10dp"
     android:layout_height="match_parent">
 
-    <TextView
-        android:layout_width="wrap_content"
+    <RelativeLayout
+        android:id="@+id/actionBarLayout"
+        android:layout_width="350dp"
+        android:layout_centerHorizontal="true"
         android:layout_height="wrap_content"
-        android:text="PROFILE"
-        android:textColor="@color/white"
-        android:textSize="100dp"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent"></TextView>
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
 
-</androidx.constraintlayout.widget.ConstraintLayout>
+
+        <TextView
+            android:id="@+id/childName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/profile"
+            android:fontFamily="@font/kanit"
+            android:textSize="30sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainCurrency"
+        android:layout_below="@id/actionBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:textSize="20sp"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:text="@string/main_currency">
+
+            </TextView>
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/currency_spinner"
+                android:layout_width="150dp"
+                android:paddingStart="20dp"
+                android:paddingEnd="20dp"
+                android:fontFamily="@font/kanit"
+                android:layout_height="50dp"
+                android:layout_alignParentEnd="true"
+                android:background="@drawable/outlined_box_with_corners"
+                android:drawableEnd="@drawable/baseline_arrow_drop_down_circle_24"
+                android:inputType="none"
+                app:startIconDrawable="@drawable/exchange"/>
+
+
+        </RelativeLayout>
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/changeLanguage"
+        android:layout_below="@id/mainCurrency"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:textSize="20sp"
+
+                android:text="@string/change_language">
+
+            </TextView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLanguage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_language"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                app:iconGravity="end"
+                android:layout_marginBottom="10dp"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="4dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/userSettings"
+        android:layout_below="@id/changeLanguage"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:textSize="20sp"
+
+                android:text="@string/change_user_settings">
+            </TextView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUserSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/change_user_settings"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                app:iconGravity="end"
+                android:layout_marginBottom="10dp"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="4dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="20dp"
+        android:text="@string/logout"
+        android:layout_alignParentBottom="true"
+        android:textColor="@android:color/white"/>
+
+</RelativeLayout>

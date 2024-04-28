@@ -1,4 +1,4 @@
-package com.example.financeapp.data
+package com.example.financeapp.model
 
 data class Category(
     val id: String = "",
