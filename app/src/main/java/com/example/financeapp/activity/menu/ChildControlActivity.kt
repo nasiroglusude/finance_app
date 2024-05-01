@@ -17,13 +17,22 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class ChildControlActivity : AppCompatActivity() {
+class ChildControlActivity : AppCompatActivity(), CoroutineScope {
 
     private lateinit var binding: ActivityChildControlBinding
     private lateinit var dialogBinding: DialogPocketMoneyBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var database: DatabaseReference
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -38,34 +47,38 @@ class ChildControlActivity : AppCompatActivity() {
             println("You have clicked")
             showAddPocketMoneyDialog()
         }
-
-        childId?.let { id ->
-            fetchAllChildAttributes(id) { attributes ->
-                if (attributes != null) {
-                    // Access individual attributes
-                    val firstName = attributes["firstName"] as? String
-                    val childBalance = attributes["balance"] as? String
-                    val childCurrency = attributes["currency"] as String
-                    val currencySymbol = Currency.valueOf(childCurrency).symbol
-                    val formattedText = getString(R.string.spending_label, firstName)
-
-                    binding.childName.text = firstName
-                    binding.childAvailableBalance.text = childBalance
-                    binding.childCurrency.text = currencySymbol
-                    binding.childExpenses.text = formattedText
-
-                    // Access the expense budgets
-                    val expenseBudgets = attributes["expenseBudgets"] as? List<Map<String, Any?>>
-                    expenseBudgets?.let {
-                        setUpRecyclerView(it)
-                    }
-                } else {
-                    println("No attributes found for the child.")
-                }
+        if (childId != null){
+            launch{
+                setChildAttributes(childId)
             }
         }
     }
 
+    private fun setChildAttributes(childId: String){
+        fetchAllChildAttributes(childId) { attributes ->
+            if (attributes != null) {
+                // Access individual attributes
+                val firstName = attributes["firstName"] as? String
+                val childBalance = attributes["balance"] as? String
+                val childCurrency = attributes["currency"] as String
+                val currencySymbol = Currency.valueOf(childCurrency).symbol
+                val formattedText = getString(R.string.spending_label, firstName)
+
+                binding.childName.text = firstName
+                binding.childAvailableBalance.text = childBalance
+                binding.childCurrency.text = currencySymbol
+                binding.childExpenses.text = formattedText
+
+                // Access the expense budgets
+                val expenseBudgets = attributes["expenseBudgets"] as? List<Map<String, Any?>>
+                expenseBudgets?.let {
+                    setUpRecyclerView(it)
+                }
+            } else {
+                println("No attributes found for the child.")
+            }
+        }
+    }
     private fun fetchAllChildAttributes(childId: String, callback: (Map<String, Any?>?) -> Unit) {
         val database = FirebaseDatabase.getInstance().reference
         val childRef = database.child("child").child(childId)
@@ -156,7 +169,9 @@ class ChildControlActivity : AppCompatActivity() {
 
             // Update the child's balance in Firebase
             childId?.let { id ->
-                updateChildBalance(id, newBalance)
+                launch{
+                    updateChildBalance(id, newBalance)
+                }
             }
 
             // Update the UI with the new balance

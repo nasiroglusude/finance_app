@@ -61,6 +61,7 @@ dependencies {
     implementation("androidx.compose.material3:material3:1.2.1")
     implementation("androidx.compose.ui:ui-tooling-preview")
     implementation("com.google.android.material:material:1.11.0")
+    implementation ("androidx.work:work-runtime:2.9.0")
 
     //ColorPicker from GitHub
     implementation("com.github.skydoves:colorpickerview:2.1.0")

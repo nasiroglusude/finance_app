@@ -75,5 +75,6 @@
 <string name="change_language">Language</string>
 <string name="logout">Log Out</string>
 <string name="change_user_settings">User Settings</string>
+<string name="logout_message">Are you sure you want to logout?\n</string>
 
 </resources>

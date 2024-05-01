@@ -15,8 +15,13 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class UserPreferencesActivity : AppCompatActivity() {
+class UserPreferencesActivity : AppCompatActivity(), CoroutineScope {
 
     private lateinit var binding: ActivityUserPreferencesBinding
     private lateinit var adapter: CurrencyAdapter
@@ -25,6 +30,9 @@ class UserPreferencesActivity : AppCompatActivity() {
     private var isDropdownVisible = false
     private lateinit var database: DatabaseReference
 
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -32,20 +40,17 @@ class UserPreferencesActivity : AppCompatActivity() {
         binding = ActivityUserPreferencesBinding.inflate(layoutInflater)
         setContentView(binding.root)
         database = FirebaseDatabase.getInstance().reference
-        val currencies = Currency.entries.toList()
 
-        // Create the adapter with your custom layout and the Currency array
-        adapter = CurrencyAdapter(this, android.R.layout.simple_spinner_dropdown_item, currencies)
 
-        binding.materialSpinner.setAdapter(adapter)
+        setSpinner()
+        setListeners()
+    }
 
-        // Set the initial selection to the first item in the list
-        binding.materialSpinner.setText(adapter.getItem(0).toString(), false)
-
-        // Optional: Set a click listener to get the selected currency
-        binding.materialSpinner.setOnItemClickListener { _, _, position, _ ->
-            selectedCurrencyPosition = position
-            // Do something with the selected currency, such as displaying it
+    private fun setListeners(){
+        binding.btnContinue.setOnClickListener {
+            launch {
+                savePreferencesToFirebase()
+            }
         }
         binding.materialSpinner.setOnClickListener {
             if (isDropdownVisible) {
@@ -59,9 +64,21 @@ class UserPreferencesActivity : AppCompatActivity() {
             }
         }
 
-        binding.btnContinue.setOnClickListener {
-            savePreferencesToFirebase()
+        // Optional: Set a click listener to get the selected currency
+        binding.materialSpinner.setOnItemClickListener { _, _, position, _ ->
+            selectedCurrencyPosition = position
+            // Do something with the selected currency, such as displaying it
         }
+    }
+
+    private fun setSpinner(){
+        val currencies = Currency.entries.toList()
+        // Create the adapter with your custom layout and the Currency array
+        adapter = CurrencyAdapter(this, android.R.layout.simple_spinner_dropdown_item, currencies)
+
+        binding.materialSpinner.setAdapter(adapter)
+        // Set the initial selection to the first item in the list
+        binding.materialSpinner.setText(adapter.getItem(0).toString(), false)
     }
 
     private fun savePreferencesToFirebase() {

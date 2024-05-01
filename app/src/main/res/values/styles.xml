@@ -3,4 +3,11 @@
     <style name="CircularShapeAppearance" parent="">
         <item name="cornerFamily">rounded</item>
     </style>
+
+    <style name="MenuItemBig">
+    <item name="android:layout_width">wrap_content</item>
+    <item name="android:layout_height">wrap_content</item>
+    <item name="android:textSize">20sp</item> <!-- Adjust text size as needed -->
+    <item name="android:padding">16dp</item> <!-- Adjust padding as needed -->
+    </style>
 </resources>

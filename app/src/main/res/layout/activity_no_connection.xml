@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:background="@drawable/background"
+    android:paddingStart="20dp"
+    android:paddingEnd="20dp"
+    android:paddingBottom="30dp"
+    android:paddingTop="30dp">
+    <LinearLayout
+        android:id="@+id/check_connection_text"
+        android:layout_height="wrap_content"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_width="wrap_content"
+        android:orientation="vertical">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:fontFamily="@font/kanit"
+            android:text="@string/no_internet"
+            android:textColor="@color/black"
+            android:textSize="40sp"
+            android:textStyle="bold"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/reconnect_to_contiune"
+            android:fontFamily="@font/lora"
+            android:paddingBottom="15dp"
+            android:layout_marginBottom="40dp"
+            android:textSize="17sp"
+            />
+    </LinearLayout>
+
+    <ImageView
+        android:layout_below="@id/check_connection_text"
+        android:layout_height="300dp"
+        android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:src="@drawable/no_internet_connection">
+    </ImageView>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btn_try_again"
+        android:layout_alignParentBottom="true"
+        android:text="@string/try_again"
+        android:layout_marginBottom="50dp"
+        android:textColor="@color/black"
+        android:fontFamily="@font/kanit"
+        android:textSize="20sp"
+        android:backgroundTint="@color/purple_200"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
+
+</RelativeLayout>
+

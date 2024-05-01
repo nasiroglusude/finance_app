@@ -227,7 +227,7 @@
                     android:padding="20dp" />
 
                 <TextView
-                    android:id="@+id/tv_date_month"
+                    android:id="@+id/tv_date"
                     style="@style/TextAppearance.MaterialComponents.Subtitle2"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
@@ -240,7 +240,7 @@
                     android:id="@+id/recyclerView"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/tv_date_month"
+                    android:layout_below="@id/tv_date"
                     android:layout_margin="10dp"
                     android:orientation="horizontal"
                     app:layoutManager="androidx.recyclerview.widget.LinearLayoutManager"

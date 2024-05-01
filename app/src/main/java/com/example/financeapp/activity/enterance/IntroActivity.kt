@@ -4,24 +4,36 @@ import android.content.Intent
 import android.os.Bundle
 import androidx.appcompat.app.AppCompatActivity
 import androidx.appcompat.widget.PopupMenu
+import androidx.lifecycle.lifecycleScope
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.databinding.ActivityIntroBinding
+import com.example.financeapp.util.ConnectivityObserver
+import com.example.financeapp.util.NetworkConnectivityObserver
 import com.google.android.material.button.MaterialButton
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.launch
 import java.util.Locale
 
 class IntroActivity : AppCompatActivity() {
     private lateinit var binding: ActivityIntroBinding
+    private lateinit var firebaseAuth: FirebaseAuth
+    private lateinit var conObserver: ConnectivityObserver
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityIntroBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        firebaseAuth = Firebase.auth
+        conObserver = NetworkConnectivityObserver(applicationContext)
 
         FirebaseDatabase.getInstance("https://finansuygulama-c3e68-default-rtdb.europe-west1.firebasedatabase.app")
+        observeConnection(conObserver)
         clickListeners()
         setupLanguageSelectionMenu()
-
     }
 
     fun loginPage() {
@@ -39,6 +51,24 @@ class IntroActivity : AppCompatActivity() {
         startActivity(intent)
     }
 
+    private fun observeConnection(connectivityObserver: ConnectivityObserver){
+        lifecycleScope.launch {
+            connectivityObserver.observe().collect { status ->
+                when (status) {
+                    ConnectivityObserver.Status.Available -> {
+                        userAutoLogin()
+                    }
+                    ConnectivityObserver.Status.Unavailable->{
+                        startActivity(Intent(this@IntroActivity, NoConnectionActivity::class.java))
+                    }
+                    ConnectivityObserver.Status.Losing,
+                    ConnectivityObserver.Status.Lost -> {
+                        startActivity(Intent(this@IntroActivity, NoConnectionActivity::class.java))
+                    }
+                }
+            }
+        }
+    }
 
     private fun clickListeners() {
         binding.btnSignup.setOnClickListener{
@@ -49,6 +79,16 @@ class IntroActivity : AppCompatActivity() {
         }
         binding.btnChildrenLogin.setOnClickListener{
             childLoginPage()
+        }
+    }
+
+    private fun userAutoLogin(){
+        val currentUserUid = firebaseAuth.currentUser?.uid
+        println(currentUserUid)
+        if (currentUserUid != null){
+            val intent = Intent(this, MenuActivity::class.java)
+            startActivity(intent)
+            finish()
         }
     }
 

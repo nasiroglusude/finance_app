@@ -75,5 +75,22 @@
     <string name="change_language">Dil</string>
     <string name="logout">Çıkış Yap</string>
     <string name="change_user_settings">Kullanıcı Ayarları</string>
+    <string name="logout_message">Çıkış yapmak istediğinize emin misiniz ?\n</string>
+    <string name="yes">Evet\n</string>
+    <string name="cancel">İptal\n</string>
+    <string name="change_password">Şifre Değiştir</string>
+    <string name="change">Değiştir</string>
+    <string name="password_old">Eski Şifreniz</string>
+    <string name="password_new">Yeni Şifre</string>
+    <string name="password_new_again">Yeni Şifre Tekrar</string>
+    <string name="no_internet">Lütfen bağlantınızı\nkontrol edin</string>
+    <string name="reconnect_to_contiune">Devam etmek için bir ağa bağlanın</string>
+    <string name="try_again">Tekrar Dene</string>
+    <string name="currency">Para Birimi</string>
+    <string name="budget_type">Bütçe Tipi</string>
+    <string name="daily">Günlük</string>
+    <string name="monthly">Aylık</string>
+    <string name="repetition">Yenilenme</string>
+    <string name="yearly">Yıllık</string>
 
 </resources>

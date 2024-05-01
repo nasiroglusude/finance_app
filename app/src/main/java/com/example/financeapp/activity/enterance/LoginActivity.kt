@@ -20,10 +20,19 @@ import com.google.firebase.Firebase
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.auth
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class LoginActivity : AppCompatActivity() {
+class LoginActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityLoginBinding
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -31,10 +40,10 @@ class LoginActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         supportActionBar?.hide()
-
         // Firebase authentication instance'ını başlat
         auth = Firebase.auth
 
+        println( auth.currentUser?.uid)
         // Giriş butonunun alfasını ayarla
         binding.btnLogin.alpha = 0.5f
 
@@ -100,7 +109,6 @@ class LoginActivity : AppCompatActivity() {
 
         // Giriş butonuna tıklanınca
         binding.btnLogin.setOnClickListener {
-
             val email = binding.email.text.toString()
             val password = binding.password.text.toString()
 
@@ -113,28 +121,32 @@ class LoginActivity : AppCompatActivity() {
                 ).show()
                 return@setOnClickListener
             }
-
-            // E-posta ve şifreyle oturum açmayı dene
-            auth.signInWithEmailAndPassword(email, password)
-                .addOnCompleteListener(this) { task ->
-                    if (task.isSuccessful) {
-                        // Oturum açma başarılı, kullanıcının bilgileriyle arayüzü güncelle
-                        Log.d(TAG, "signInWithEmail:success")
-                        val user = auth.currentUser
-                        updateUI(user)
-                    } else {
-                        // Oturum açma başarısız olursa, kullanıcıya bir mesaj göster
-                        Log.w(TAG, "signInWithEmail:failure", task.exception)
-                        Toast.makeText(
-                            baseContext,
-                            "Kimlik doğrulama başarısız oldu.",
-                            Toast.LENGTH_SHORT,
-                        ).show()
-                        updateUI(null)
-                    }
-                }
-
+            launch{
+                userSignIn(email, password)
+            }
         }
+    }
+
+    private fun userSignIn(email:String, password:String){
+        // E-posta ve şifreyle oturum açmayı dene
+        auth.signInWithEmailAndPassword(email, password)
+            .addOnCompleteListener(this) { task ->
+                if (task.isSuccessful) {
+                    // Oturum açma başarılı, kullanıcının bilgileriyle arayüzü güncelle
+                    Log.d(TAG, "signInWithEmail:success")
+                    val user = auth.currentUser
+                    updateUI(user)
+                } else {
+                    // Oturum açma başarısız olursa, kullanıcıya bir mesaj göster
+                    Log.w(TAG, "signInWithEmail:failure", task.exception)
+                    Toast.makeText(
+                        baseContext,
+                        "Kimlik doğrulama başarısız oldu.",
+                        Toast.LENGTH_SHORT,
+                    ).show()
+                    updateUI(null)
+                }
+            }
     }
 
     // Kullanıcı arayüzünü güncelleyen fonksiyon

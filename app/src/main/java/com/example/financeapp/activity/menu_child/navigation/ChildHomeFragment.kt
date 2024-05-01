@@ -32,12 +32,18 @@ import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.ktx.Firebase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.Calendar
 import java.util.Date
 import java.util.Locale
+import kotlin.coroutines.CoroutineContext
 
-class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener {
+class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener,
+    CoroutineScope {
 
     private lateinit var binding: ActivityControlledChildBinding
     private lateinit var auth: FirebaseAuth
@@ -50,11 +56,15 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
     private lateinit var adapter: HorizontalCalendarAdapter
     private val calendarList2 = ArrayList<DateCalendar>()
 
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // ViewBinding'i başlat
         binding = ActivityControlledChildBinding.inflate(layoutInflater)
         val view = binding.root
 
@@ -62,31 +72,7 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
         auth = Firebase.auth
 
         childId = arguments?.getString("childId")
-        //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
-        childId?.let { id ->
-            fetchChildAttributeById(id, "balance") { balance ->
-                balance?.let { availableBalance ->
-                    binding.availableBalance.text = availableBalance
-                }
-
-            }
-        }
-
-        animateButton(binding.btnIncome, true)
-        animateButton(binding.btnOutcome, false)
-
-        val tvMonth = setUpCalendarAdapter(binding.recyclerView, this@ChildHomeFragment)
-        binding.tvDateMonth.text = tvMonth
-        fetchBudgetsFromFirebase(tvMonth)
-
-        setUpCalendarPrevNextClickListener(binding.ivCalendarNext, binding.ivCalendarPrevious) { selectedMonthYear ->
-            // Callback when month changes
-            // Update UI with the selected month and year
-            binding.tvDateMonth.text = selectedMonthYear
-            println(selectedMonthYear)
-            // Fetch budgets again based on the selected month and year
-            fetchBudgetsFromFirebase(selectedMonthYear)
-        }
+        initializeUI()
 
         return view
     }
@@ -94,6 +80,39 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
     override fun onItemClick(ddMmYy: String, dd: String, day: String) {
         val selectedDate = "$day $dd, $ddMmYy"
         Toast.makeText(requireContext(), "Selected Date: $selectedDate", Toast.LENGTH_SHORT).show()
+    }
+
+    private fun initializeUI() {
+        //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
+        childId?.let { id ->
+            fetchChildAttributeById(id, "balance") { balance ->
+                balance?.let { availableBalance ->
+                    binding.availableBalance.text = availableBalance
+                }
+            }
+        }
+        animateButton(binding.btnIncome, true)
+        animateButton(binding.btnOutcome, false)
+
+        val tvMonth = setUpCalendarAdapter(binding.recyclerView, this@ChildHomeFragment)
+        binding.tvDateMonth.text = tvMonth
+        launch {
+            fetchBudgetsFromFirebase(tvMonth)
+        }
+
+        setUpCalendarPrevNextClickListener(
+            binding.ivCalendarNext,
+            binding.ivCalendarPrevious
+        ) { selectedMonthYear ->
+            // Callback when month changes
+            // Update UI with the selected month and year
+            binding.tvDateMonth.text = selectedMonthYear
+            println(selectedMonthYear)
+            // Fetch budgets again based on the selected month and year
+            launch {
+                fetchBudgetsFromFirebase(selectedMonthYear)
+            }
+        }
     }
 
     private fun fetchChildAttributeById(
@@ -143,8 +162,12 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
                             budget?.let {
                                 // Get the creation date
                                 val creationDate = it.creationDate // String olarak alınan tarih
-                                val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // String'i Date'e dönüştürmek için format belirle
-                                val date = dateFormat.parse(creationDate) ?: Date() // String tarihi Date'e dönüştür
+                                val dateFormat = SimpleDateFormat(
+                                    "dd/MM/yy",
+                                    Locale.getDefault()
+                                ) // String'i Date'e dönüştürmek için format belirle
+                                val date = dateFormat.parse(creationDate)
+                                    ?: Date() // String tarihi Date'e dönüştür
                                 val calendar = Calendar.getInstance()
                                 calendar.time = date
                                 val dateFormat2 = SimpleDateFormat("MMMM", Locale.getDefault())
@@ -187,7 +210,12 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
                             binding.btnOutcome.setOnClickListener {
                                 animateButton(binding.btnIncome, false)
                                 animateButton(binding.btnOutcome, true)
-                                updatePieChartDataSet(pieChart, outcomeLabels, outcomes, outcomeColors)
+                                updatePieChartDataSet(
+                                    pieChart,
+                                    outcomeLabels,
+                                    outcomes,
+                                    outcomeColors
+                                )
                             }
                         }
                     }
@@ -210,6 +238,7 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
         )
         return pieChart
     }
+
     private fun clearChart() {
         binding.chartContainer.removeAllViews()
     }
@@ -282,6 +311,7 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
             handleCalendarNavigation(onMonthChanged)
         }
     }
+
     private fun handleCalendarNavigation(onMonthChanged: (String) -> Unit) {
         val selectedMonthYear = sdf.format(cal.time)
         onMonthChanged.invoke(selectedMonthYear)
@@ -290,7 +320,10 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
     /*
      * Setting up adapter for recyclerview
      */
-    private fun setUpCalendarAdapter(recyclerView: RecyclerView, listener : HorizontalCalendarAdapter.OnItemClickListener) : String {
+    private fun setUpCalendarAdapter(
+        recyclerView: RecyclerView,
+        listener: HorizontalCalendarAdapter.OnItemClickListener
+    ): String {
         val snapHelper: SnapHelper = LinearSnapHelper()
         snapHelper.attachToRecyclerView(recyclerView)
 
@@ -309,7 +342,7 @@ class ChildHomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListe
     /*
      * Function to setup calendar for every month
      */
-    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener) : String {
+    private fun setUpCalendar(listener: HorizontalCalendarAdapter.OnItemClickListener): String {
         val calendarList = ArrayList<DateCalendar>()
         val monthCalendar = cal.clone() as Calendar
         val maxDaysInMonth = cal.getActualMaximum(Calendar.DAY_OF_MONTH)

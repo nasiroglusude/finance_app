@@ -24,12 +24,21 @@ import com.google.firebase.auth.FirebaseUser
 import com.google.firebase.auth.UserProfileChangeRequest
 import com.google.firebase.auth.auth
 import com.google.firebase.database.FirebaseDatabase
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
+import kotlin.coroutines.CoroutineContext
 
-class RegisterActivity : AppCompatActivity() {
+class RegisterActivity : AppCompatActivity(),CoroutineScope {
 
     private lateinit var binding: ActivityRegisterBinding
     private lateinit var auth: FirebaseAuth
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -37,14 +46,14 @@ class RegisterActivity : AppCompatActivity() {
         setContentView(binding.root)
 
         binding.btnSignup.alpha = 0.5f
-        EditTextListener()
+        editTextListener()
         setupClickListener()
         setupClickableSpan()
         setupTextChangeListeners()
     }
 
     // E-posta ve Doğum Tarihi alanlarını dinleyen fonksiyonlar
-    private fun EditTextListener() {
+    private fun editTextListener() {
         binding.email.setOnFocusChangeListener{_, focused->
             if(!focused){
                 binding.emailContainer.helperText = validEmail()
@@ -89,7 +98,9 @@ class RegisterActivity : AppCompatActivity() {
         }
 
         binding.btnSignup.setOnClickListener {
-            signupWithEmailAndPassword()
+            launch {
+                signupWithEmailAndPassword()
+            }
         }
     }
 

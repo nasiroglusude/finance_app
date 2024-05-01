@@ -7,9 +7,11 @@ import android.view.LayoutInflater
 import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
+import androidx.activity.OnBackPressedCallback
 import androidx.compose.ui.text.font.FontVariation
 import androidx.fragment.app.Fragment
 import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
 import com.example.financeapp.databinding.DialogAddChildBinding
 import com.example.financeapp.databinding.FragmentKidsBinding
 import com.example.financeapp.databinding.FragmentUserSettingsBinding
@@ -21,12 +23,22 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class UserSettingsFragment : Fragment() {
+class UserSettingsFragment : Fragment(), CoroutineScope {
+
     private lateinit var binding: FragmentUserSettingsBinding
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
+    private lateinit var parentActivity: MenuActivity
 
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -35,40 +47,37 @@ class UserSettingsFragment : Fragment() {
         binding = FragmentUserSettingsBinding.inflate(inflater, container, false)
         val view = binding.root
 
+        parentActivity = activity as MenuActivity
         databaseReference = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
 
-        fetchUserData()
+        launch{
+            fetchUserData()
+        }
         setClickListeners()
-
+        whenBackPressed()
         return view
     }
 
     private fun setClickListeners(){
         binding.btnSave.setOnClickListener{
             binding.apply {
-                updateUserData(
-                    firstName.text.toString(),
-                    lastName.text.toString(),
-                    phoneNumber.text.toString(),
-                    dateOfBirth.text.toString(),
-                    email.text.toString())
+                launch {
+                    updateUserData(
+                        firstName.text.toString(),
+                        lastName.text.toString(),
+                        phoneNumber.text.toString(),
+                        dateOfBirth.text.toString(),
+                        email.text.toString())
+                }
             }
-            switchToFragment(ProfileFragment())
-        }
-
+            parentActivity.replaceFragment(ProfileFragment())
+            }
         binding.backButton.setOnClickListener{
-            switchToFragment(ProfileFragment())
+            parentActivity.replaceFragment(ProfileFragment())
         }
     }
 
-    private fun switchToFragment(fragment: Fragment){
-        // Reload or refresh the profile fragment
-        val targetFragment = fragment
-        requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_layout, targetFragment)
-            .commit()
-    }
 
 
     @SuppressLint("ClickableViewAccessibility")
@@ -155,6 +164,15 @@ class UserSettingsFragment : Fragment() {
                 "dateOfBirth" to dateOfBirth,
                 "email" to email
             )
+            currentUserIndex.updateEmail(email)
+                .addOnCompleteListener { task ->
+                    if (task.isSuccessful) {
+                        println("Email successfully changed")
+                    } else {
+                        // Email address update initiation failed
+                        // You can handle the failure, e.g., display an error message
+                    }
+                }
 
             // Update user data in the database
             userRef.updateChildren(userData)
@@ -167,5 +185,20 @@ class UserSettingsFragment : Fragment() {
         }
     }
 
+    private fun switchToFragment(fragment: Fragment){
+        // Reload or refresh the profile fragment
+        val targetFragment = fragment
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.frame_layout, targetFragment)
+            .commit()
+    }
 
+
+    private fun whenBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                switchToFragment((ProfileFragment()))
+            }
+        })
+    }
 }

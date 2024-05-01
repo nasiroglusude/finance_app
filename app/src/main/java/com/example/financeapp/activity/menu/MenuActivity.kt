@@ -1,47 +1,68 @@
 package com.example.financeapp.activity.menu
 
 import KidsFragment
+import com.example.financeapp.activity.menu.navigation.NewBudgetFragment
 import ProfileFragment
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
+import androidx.lifecycle.lifecycleScope
 import com.example.financeapp.R
+import com.example.financeapp.activity.enterance.NoConnectionActivity
 import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.activity.menu.navigation.ExchangeFragment
 import com.example.financeapp.activity.menu.navigation.HomeFragment
 import com.example.financeapp.model.User
+import com.example.financeapp.util.ConnectivityObserver
+import com.example.financeapp.util.NetworkConnectivityObserver
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class MenuActivity: AppCompatActivity() {
+class MenuActivity: AppCompatActivity(), CoroutineScope {
 
     private lateinit var databaseReference: DatabaseReference
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityMenuBinding
     private lateinit var userData: User
+    private lateinit var conObserver: ConnectivityObserver
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
+
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
+        conObserver = NetworkConnectivityObserver(applicationContext)
+
+        observeConnection(conObserver)
         replaceFragment(HomeFragment())
         navigationButtonListener()
 
         userData = User()
         databaseReference = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
-        fetchUserData()
-        binding.btnAdd.setOnClickListener{
-            navigateToActivity(this, NewBudgetActivity::class.java)
+
+        launch {
+            fetchUserData()
         }
+
+
     }
 
     private fun navigationButtonListener(){
@@ -55,6 +76,10 @@ class MenuActivity: AppCompatActivity() {
                     replaceFragment(KidsFragment())
                     true
                 }
+                R.id.add -> {
+                    replaceFragment(NewBudgetFragment())
+                    true
+                }
                 R.id.exchange -> {
                     replaceFragment(ExchangeFragment())
                     true
@@ -64,6 +89,23 @@ class MenuActivity: AppCompatActivity() {
                     true
                 }
                 else -> false
+            }
+        }
+    }
+
+    private fun observeConnection(connectivityObserver: ConnectivityObserver){
+        lifecycleScope.launch {
+            connectivityObserver.observe().collect { status ->
+                when (status) {
+                    ConnectivityObserver.Status.Available -> {
+                    }
+                    ConnectivityObserver.Status.Unavailable,
+                    ConnectivityObserver.Status.Losing,
+                    ConnectivityObserver.Status.Lost -> {
+                        // Handle when network is unavailable
+                        startActivity(Intent(this@MenuActivity, NoConnectionActivity::class.java))
+                    }
+                }
             }
         }
     }
@@ -94,6 +136,18 @@ class MenuActivity: AppCompatActivity() {
         return userData
     }
 
+    /*
+    Usage:
+     if (activity is MenuActivity) {
+            userData = (activity as MenuActivity).getUserData()
+
+            // Kullanıcı verilerini kullanarak gerekli işlemleri yapabilirsiniz
+            val firstName = userData.firstName
+            val lastName = userData.lastName
+            val phoneNumber = userData.phoneNumber
+            // Diğer verileri almak için aynı şekilde devam edebilirsiniz
+        }
+     */
 
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()
@@ -101,9 +155,9 @@ class MenuActivity: AppCompatActivity() {
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .commit()
     }
-
-    fun navigateToActivity(context: Context, targetActivity: Class<*>) {
-        val intent = Intent(context, targetActivity)
-        context.startActivity(intent)
+    fun updateSelectedNavItem(itemId: Int) {
+        binding.bottomNavigationView.selectedItemId = itemId
     }
+
+
 }

@@ -9,28 +9,36 @@ import com.example.financeapp.R
 import com.example.financeapp.activity.menu_child.navigation.ChildHomeFragment
 import com.example.financeapp.activity.menu_child.navigation.ChildProfileFragment
 import com.example.financeapp.databinding.ActivityChildMenuBinding
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlin.coroutines.CoroutineContext
 
 class ChildMenuActivity: AppCompatActivity() {
 
     private lateinit var binding: ActivityChildMenuBinding
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityChildMenuBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
         val childId = intent.getStringExtra("childId").toString()
-        println("Child IDDDDDDDDDXD:"+childId)
-        //HomeFragment'a git ve childId datasını da götür
-        val bundle = Bundle()
-        bundle.putString("childId", childId)
-        replaceFragment(ChildHomeFragment(), bundle)
-        navigationButtonListener()
+        navigateToMenuFragment(childId)
 
         binding.btnAdd.setOnClickListener {
             val intent = Intent(this, ChildNewBudgetActivity::class.java)
             intent.putExtra("childId", childId) // Kullanıcı ID'sini intent'e ekle
             startActivity(intent)
         }
+    }
+    private fun navigateToMenuFragment(childId:String){
+        //HomeFragment'a git ve childId datasını da götür
+        val bundle = Bundle()
+        bundle.putString("childId", childId)
+        replaceFragment(ChildHomeFragment(), bundle)
+        navigationButtonListener()
     }
 
     private fun navigationButtonListener(){
@@ -57,6 +65,4 @@ class ChildMenuActivity: AppCompatActivity() {
             .setTransition(FragmentTransaction.TRANSIT_FRAGMENT_FADE)
             .commit()
     }
-
-
 }

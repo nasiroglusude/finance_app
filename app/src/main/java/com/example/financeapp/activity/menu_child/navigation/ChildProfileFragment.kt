@@ -24,66 +24,54 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class ChildProfileFragment : Fragment() {
+class ChildProfileFragment : Fragment(), CoroutineScope {
 
     private lateinit var binding: ActivityControlledChildBinding
-    private lateinit var auth: FirebaseAuth
     private lateinit var childId: String
     private lateinit var databaseReference: DatabaseReference
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View {
-        // ViewBinding'i başlat
         binding = ActivityControlledChildBinding.inflate(layoutInflater)
         val view = binding.root
 
         databaseReference = FirebaseDatabase.getInstance().reference.child("child")
 
-
-
-
-        // Firebase'den bütçeleri al
-        fetchBudgetsFromFirebase()
-        // Butonları animasyonla
-        animateButton(binding.btnIncome, true)
-        animateButton(binding.btnOutcome, false)
-
-        //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
-
-        fetchChildAttributeById(childId, "balance") { balance ->
-            balance?.let { availableBalance ->
-                binding.availableBalance.text = availableBalance
-            }
-
+        launch {
+            fetchBudgetsFromFirebase()
         }
-        /*
-        fetchParentAttributes(childId, "firstName") { fullName ->
-            fullName?.let {
-                println("Ebeveyn Adı: $it")
-            } ?: println("Çocuk için ebeveyn adı bulunamadı.")
-        }*/
+        initializeUI()
 
         return view
     }
 
 
-    private fun fetchParentAttributes(
-        childId: String,
-        attributeName: String,
-        onAttributesFetched: (attributes: String?) -> Unit
-    ) {
-        fetchChildAttributeById(childId, "parentMail") { parentMail ->
-            parentMail?.let { mail ->
-                fetchUserByParentEmail(mail, attributeName) { attribute ->
-                    onAttributesFetched(attribute)
+    private fun initializeUI() {
+        // Butonları animasyonla
+        animateButton(binding.btnIncome, true)
+        animateButton(binding.btnOutcome, false)
+
+        //Çocuğun parentMail fieldi ile eşelşen maile sahip userın verilerini çekmek
+        launch {
+            fetchChildAttributeById(childId, "balance") { balance ->
+                balance?.let { availableBalance ->
+                    binding.availableBalance.text = availableBalance
                 }
-            } ?: onAttributesFetched(null)
+            }
         }
     }
-
 
     private fun fetchChildAttributeById(
         childId: String,
@@ -102,38 +90,6 @@ class ChildProfileFragment : Fragment() {
                     // Veri bulunamadığında null değer döndür
                     callback(null)
                 }
-            }
-
-            override fun onCancelled(databaseError: DatabaseError) {
-                // Hata durumunda yapılacak işlemler
-                callback(null)
-            }
-        })
-    }
-
-
-    private fun fetchUserByParentEmail(
-        parentEmail: String,
-        attribute: String,
-        callback: (String?) -> Unit
-    ) {
-        val database = FirebaseDatabase.getInstance().reference
-        val usersRef = database.child("users")
-
-        usersRef.addListenerForSingleValueEvent(object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                for (userSnapshot in dataSnapshot.children) {
-                    val userEmail = userSnapshot.child("email").getValue(String::class.java)
-                    if (userEmail == parentEmail) {
-                        // Belirli bir parent email adresine sahip kullanıcıyı bulduk
-                        val attributeValue =
-                            userSnapshot.child(attribute).getValue(String::class.java)
-                        callback(attributeValue)
-                        return
-                    }
-                }
-                // Belirli bir parent email adresine sahip kullanıcı bulunamadı
-                callback(null)
             }
 
             override fun onCancelled(databaseError: DatabaseError) {

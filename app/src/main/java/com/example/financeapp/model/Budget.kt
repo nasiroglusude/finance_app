@@ -7,10 +7,11 @@ data class Budget(
     val color: String = "",
     val currency: String = "",
     val type: String = "",
+    val repetition: String = "",
     val category: String = "",
     var creationDate: String = ""
 ) {
     // Add a no-argument constructor
-    constructor() : this("", "", "", "", "", "", "", "")
+    constructor() : this("", "", "", "", "", "","", "", "")
 }
 

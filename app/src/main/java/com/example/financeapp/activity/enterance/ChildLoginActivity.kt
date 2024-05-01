@@ -17,11 +17,20 @@ import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.DatabaseReference
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-class ChildLoginActivity : AppCompatActivity() {
+class ChildLoginActivity : AppCompatActivity(), CoroutineScope {
     private lateinit var auth: FirebaseAuth
     private lateinit var binding: ActivityChildLoginBinding
     private lateinit var databaseReference: DatabaseReference
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -96,7 +105,9 @@ class ChildLoginActivity : AppCompatActivity() {
 
         // Giriş butonuna tıklanınca
         binding.btnLogin.setOnClickListener {
-            loginWithParentEmailAndPassword()
+            launch {
+                loginWithParentEmailAndPassword()
+            }
         }
     }
 

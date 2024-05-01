@@ -6,21 +6,30 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Toast
+import androidx.activity.OnBackPressedCallback
 import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
-import com.example.financeapp.model.Child
-import com.example.financeapp.model.User
+import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
+import com.example.financeapp.activity.menu.navigation.HomeFragment
 import com.example.financeapp.databinding.DialogAddChildBinding
 import com.example.financeapp.databinding.FragmentKidsBinding
+import com.example.financeapp.model.Child
+import com.example.financeapp.model.User
 import com.example.financeapp.enums.Currency
 import com.google.android.material.datepicker.MaterialDatePicker
 import com.google.android.material.dialog.MaterialAlertDialogBuilder
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.launch
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.coroutines.CoroutineContext
 
-class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
+class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener, CoroutineScope {
 
     private lateinit var binding: FragmentKidsBinding
     private lateinit var dialogBinding: DialogAddChildBinding
@@ -29,6 +38,10 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
     private lateinit var auth: FirebaseAuth
     private var kidsList: MutableList<User> = mutableListOf()
     private lateinit var currencySymbol: String
+
+    private val job = Job()
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.IO + job
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -51,7 +64,9 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         // Firebase'den çocuk verilerini al
         if (kidsList.isEmpty()) {
             println("Databaseden çekti")
-            fetchChildrenData()
+            launch {
+                fetchChildrenData()
+            }
         }
 
         // "Çocuk Ekle" düğmesi için tıklama dinleyicisini ayarla
@@ -60,8 +75,10 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
         }
 
         currencySymbol = ""
-        fetchUserPreferences()
-
+        launch {
+            fetchUserPreferences()
+        }
+        whenBackPressed()
 
         return view
     }
@@ -251,6 +268,23 @@ class KidsFragment : Fragment(), KidsAdapter.OnDeleteChildClickListener {
     override fun onDeleteChildClick(position: Int) {
         val childId = kidsList[position].id
         showDeleteChildConfirmationDialog(childId)
+    }
+
+    private fun switchToHomeFragment() {
+        if (isAdded) {
+            requireActivity().supportFragmentManager.beginTransaction()
+                .replace(R.id.frame_layout, HomeFragment())
+                .commit()
+            (requireActivity() as MenuActivity).updateSelectedNavItem(R.id.home)
+        }
+    }
+
+    private fun whenBackPressed() {
+        requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true){
+            override fun handleOnBackPressed() {
+                switchToHomeFragment()
+            }
+        })
     }
 }
 
