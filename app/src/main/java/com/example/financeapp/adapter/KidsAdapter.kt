@@ -6,7 +6,7 @@ import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.example.financeapp.R
-import com.example.financeapp.activity.menu.ChildControlActivity
+import com.example.financeapp.activity.menu.navigation.child.ChildControlActivity
 import com.example.financeapp.model.User
 import com.google.android.material.button.MaterialButton
 
@@ -31,7 +31,7 @@ class KidsAdapter(
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int):  ViewHolder {
         // ViewHolder'ın düzenini şişir
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.kids_card_view, parent, false)
+            .inflate(R.layout.children_item, parent, false)
 
         return ViewHolder(view)
     }

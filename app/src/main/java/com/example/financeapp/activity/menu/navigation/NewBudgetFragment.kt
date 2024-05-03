@@ -50,6 +50,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
         savedInstanceState: Bundle?
     ): View {
         binding = FragmentNewBudgetBinding.inflate(inflater, container, false)
+        dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
         return binding.root
     }
 
@@ -57,17 +58,15 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
         super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
 
-        dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
 
         // Kategori spinner adaptörünü başlat
         categoryAdapter = CategoryAdapter(requireContext(), mutableListOf()) // Boş bir listeyle başlat
         binding.categorySpinner.adapter = categoryAdapter // Adaptörü ayarla
-
         launch {
             updateCategorySpinner()
         }
-        setRepetitionSpinnerAdapter()
-        setSpinnerAdapter()
+        setRepetitionSpinner()
+        setCurrencySpinner()
         setListeners()
     }
 
@@ -117,7 +116,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
             }
     }
 
-    private fun setSpinnerAdapter() {
+    private fun setCurrencySpinner() {
         val spinnerAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,
@@ -126,7 +125,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.currencySpinner.adapter = spinnerAdapter
     }
-    private fun setRepetitionSpinnerAdapter() {
+    private fun setRepetitionSpinner() {
         val spinnerAdapter = ArrayAdapter(
             requireContext(),
             android.R.layout.simple_spinner_item,

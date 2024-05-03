@@ -1,6 +1,5 @@
-package com.example.financeapp.activity.menu.navigation
+package com.example.financeapp.activity.menu.navigation.settings
 
-import ProfileFragment
 import android.annotation.SuppressLint
 import android.os.Bundle
 import android.view.LayoutInflater
@@ -8,12 +7,9 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewGroup
 import androidx.activity.OnBackPressedCallback
-import androidx.compose.ui.text.font.FontVariation
 import androidx.fragment.app.Fragment
 import com.example.financeapp.R
 import com.example.financeapp.activity.menu.MenuActivity
-import com.example.financeapp.databinding.DialogAddChildBinding
-import com.example.financeapp.databinding.FragmentKidsBinding
 import com.example.financeapp.databinding.FragmentUserSettingsBinding
 import com.example.financeapp.model.User
 import com.google.android.material.textfield.TextInputEditText
@@ -71,10 +67,10 @@ class UserSettingsFragment : Fragment(), CoroutineScope {
                         email.text.toString())
                 }
             }
-            parentActivity.replaceFragment(ProfileFragment())
+            parentActivity.replaceFragment(SettingsFragment())
             }
         binding.backButton.setOnClickListener{
-            parentActivity.replaceFragment(ProfileFragment())
+            parentActivity.replaceFragment(SettingsFragment())
         }
     }
 
@@ -197,7 +193,7 @@ class UserSettingsFragment : Fragment(), CoroutineScope {
     private fun whenBackPressed() {
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
-                switchToFragment((ProfileFragment()))
+                switchToFragment((SettingsFragment()))
             }
         })
     }

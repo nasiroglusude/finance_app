@@ -1,4 +1,4 @@
-package com.example.financeapp.activity.menu
+package com.example.financeapp.activity.menu.navigation.child
 
 import android.os.Bundle
 import androidx.appcompat.app.AlertDialog
@@ -47,6 +47,7 @@ class ChildControlActivity : AppCompatActivity(), CoroutineScope {
             println("You have clicked")
             showAddPocketMoneyDialog()
         }
+
         if (childId != null){
             launch{
                 setChildAttributes(childId)

@@ -2,9 +2,13 @@ package com.example.financeapp.activity.menu.navigation
 
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
+import android.annotation.SuppressLint
 import android.content.Intent
+import android.graphics.BitmapFactory
 import android.graphics.Color
 import android.graphics.Typeface
+import android.graphics.drawable.BitmapDrawable
+import android.net.Uri
 import android.os.Bundle
 import android.view.Gravity
 import android.view.LayoutInflater
@@ -26,6 +30,8 @@ import com.example.financeapp.R
 import com.example.financeapp.activity.enterance.IntroActivity
 import com.example.financeapp.activity.enterance.UserPreferencesActivity
 import com.example.financeapp.activity.menu.MenuActivity
+import com.example.financeapp.activity.menu.navigation.more.BillsFragment
+import com.example.financeapp.activity.menu.navigation.more.DebtsFragment
 import com.example.financeapp.model.Budget
 import com.example.financeapp.model.User
 import com.example.financeapp.enums.Currency
@@ -45,6 +51,7 @@ import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.launch
+import java.io.IOException
 import java.text.DateFormatSymbols
 import java.text.SimpleDateFormat
 import java.util.Calendar
@@ -61,11 +68,9 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
 
     private val sdf = SimpleDateFormat("MMMM yyyy", Locale.ENGLISH)
     private val cal = Calendar.getInstance(Locale.ENGLISH)
-    private val dates = ArrayList<Date>()
     private lateinit var adapter: HorizontalCalendarAdapter
     private val calendarList2 = ArrayList<DateCalendar>()
     private var isIncomeSelected = true
-
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
@@ -102,7 +107,17 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
         launch {
             fetchBudgetsFromFirebase(monthIndex.toString(), calendarYear.toString())
         }
+        binding.btnDebts.setOnClickListener{
+            val menuActivity = requireActivity() as MenuActivity
+            val fragment = DebtsFragment()
+            menuActivity.replaceFragment(fragment)
+        }
 
+        binding.btnBills.setOnClickListener{
+            val menuActivity = requireActivity() as MenuActivity
+            val fragment = BillsFragment()
+            menuActivity.replaceFragment(fragment)
+        }
         setUpCalendarPrevNextClickListener(binding.ivCalendarNext, binding.ivCalendarPrevious) { currentMonthString ->
             // Callback when month changes
             // Update UI with the selected month and year
@@ -111,9 +126,6 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
             val calendar1 = setCalendar(binding.recyclerView, this@HomeFragment)
             val monthIndex1 = calendar1.get(Calendar.MONTH)
             val calendarYear1 = calendar1.get(Calendar.YEAR)
-
-            println("$monthIndex1 $calendarYear1")
-
 
             // Fetch budgets again based on the selected month and year
             launch {
@@ -184,6 +196,17 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
         onMonthChanged.invoke(selectedMonthYear)
     }
 
+    private fun createDrawableFromUri(uri: Uri) {
+        try {
+            val inputStream = context?.contentResolver?.openInputStream(uri)
+            val bitmap = BitmapFactory.decodeStream(inputStream)
+            val drawable = BitmapDrawable(resources, bitmap)
+            // CircleImageView'nin src'sini oluşturulan drawable ile güncelleyin
+            binding.profilePhoto.setImageDrawable(drawable)
+        } catch (e: IOException) {
+            e.printStackTrace()
+        }
+    }
 
     private fun fetchUserPreferencesFromFirebase() {
         val currentUser = auth.currentUser
@@ -198,6 +221,13 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
                         if (userData != null) {
                             val currency = userData.currency
                             val balance = userData.balance
+                            val profilePhoto = userData.profilePhoto
+                            println("PROFİL"+profilePhoto)
+                            profilePhoto?.let {
+                                // URI'yi kullanarak drawable oluşturmak için metodu çağırın
+                                createDrawableFromUri(Uri.parse(profilePhoto))
+                            }
+
                             if (currency.isNotEmpty() && balance.isNotEmpty())
                                 updateUI(balance, currency)
                             else
@@ -243,6 +273,7 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
         dialog.show()
     }
     //Budgetleri firebase çeken fonksiyon
+    @SuppressLint("SuspiciousIndentation")
     private fun fetchBudgetsFromFirebase(selectedMonth: String, selectedYear: String) {
         // Kullanıcı kimliğini al
         val userId = auth.currentUser?.uid
@@ -339,6 +370,17 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
                                     updateUserBalance(uid, amount.toInt())
                                     if (budgetKey != null){
                                         updateBudgetRepetitionState(uid, budgetKey, "added")
+                                        if (it.type == "Income") {
+                                            clearChart()
+                                            incomeLabels.add(it.title)
+                                            incomes.add(it.amount.toDouble())
+                                            incomeColors.add(it.color)
+                                        } else {
+                                            clearChart()
+                                            outcomeLabels.add(it.title)
+                                            outcomes.add(it.amount.toDouble())
+                                            outcomeColors.add(it.color)
+                                        }
                                     }
                                 }
 

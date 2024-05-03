@@ -1,0 +1,98 @@
+<?xml version="1.0" encoding="utf-8"?>
+<layout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:gravity="center_vertical"
+        android:orientation="vertical"
+        android:paddingLeft="15dp"
+        android:paddingRight="15dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="60dp"
+            android:layout_gravity="center"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="10dp"
+            android:fontFamily="@font/kanit"
+            android:text="@string/add_debt"
+            android:textSize="35sp"
+            android:textStyle="bold" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/firstNameContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/debt_owner"
+            app:boxBackgroundMode="outline"
+            app:errorEnabled="true"
+            app:startIconDrawable="@drawable/first_name">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextCreditorName"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:fontFamily="@font/kanit"
+                android:inputType="textPersonName" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:hint="@string/debt_amount"
+            app:boxBackgroundMode="outline"
+            app:endIconMode="clear_text"
+            app:startIconDrawable="@drawable/exchange">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextAmount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kanit"
+                android:inputType="number" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.MaterialAutoCompleteTextView
+                android:id="@+id/material_spinner"
+                android:layout_width="match_parent"
+                android:layout_marginTop="16dp"
+                android:layout_height="60dp"
+                android:background="@drawable/outlined_box_with_corners"
+                android:drawableEnd="@drawable/baseline_arrow_drop_down_circle_24"
+                android:drawablePadding="8dp"
+                android:inputType="none"
+                android:fontFamily="@font/kanit"
+
+                android:padding="8dp"
+                app:startIconDrawable="@drawable/exchange" />
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/dateContainer"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="16dp"
+            android:hint="@string/pay_day"
+            app:boxBackgroundMode="outline"
+            app:endIconMode="clear_text"
+            app:errorEnabled="true"
+            app:helperTextTextColor="@android:color/holo_red_dark"
+            app:startIconDrawable="@drawable/date_of_birth">
+
+            <com.google.android.material.textfield.TextInputEditText
+                android:id="@+id/editTextLastDate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/kanit"
+                android:inputType="datetime" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+    </LinearLayout>
+
+</layout>

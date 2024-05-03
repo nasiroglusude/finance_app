@@ -14,7 +14,8 @@ data class User(
     var balance:String = "",
     var currency: String = "",
     var creationDate: String? = null,
+    var profilePhoto: String? = null
 ) {
     // Add a no-argument constructor
-    constructor() : this("", "", "", "", "", "", "","","", null)
+    constructor() : this("", "", "", "", "", "", "","","", null,null)
 }

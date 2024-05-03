@@ -10,6 +10,10 @@ data class Child(
     val creationDate: String?,
     val balance: String,
     val currency: String,
-)
+){
+    // Add a no-argument constructor
+    constructor() : this("", "", "", "","","","","","")
+}
+
 
 

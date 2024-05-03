@@ -1,11 +1,10 @@
 package com.example.financeapp.activity.menu
 
-import KidsFragment
+import com.example.financeapp.activity.menu.navigation.child.KidsFragment
 import com.example.financeapp.activity.menu.navigation.NewBudgetFragment
-import ProfileFragment
+import com.example.financeapp.activity.menu.navigation.settings.SettingsFragment
 import android.content.Intent
 import android.os.Bundle
-import android.view.Menu
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.FragmentTransaction
@@ -49,8 +48,8 @@ class MenuActivity: AppCompatActivity(), CoroutineScope {
         setContentView(binding.root)
 
         conObserver = NetworkConnectivityObserver(applicationContext)
-
         observeConnection(conObserver)
+
         replaceFragment(HomeFragment())
         navigationButtonListener()
 
@@ -85,7 +84,7 @@ class MenuActivity: AppCompatActivity(), CoroutineScope {
                     true
                 }
                 R.id.profile -> {
-                    replaceFragment(ProfileFragment())
+                    replaceFragment(SettingsFragment())
                     true
                 }
                 else -> false
@@ -136,18 +135,6 @@ class MenuActivity: AppCompatActivity(), CoroutineScope {
         return userData
     }
 
-    /*
-    Usage:
-     if (activity is MenuActivity) {
-            userData = (activity as MenuActivity).getUserData()
-
-            // Kullanıcı verilerini kullanarak gerekli işlemleri yapabilirsiniz
-            val firstName = userData.firstName
-            val lastName = userData.lastName
-            val phoneNumber = userData.phoneNumber
-            // Diğer verileri almak için aynı şekilde devam edebilirsiniz
-        }
-     */
 
     fun replaceFragment(fragment: Fragment) {
         supportFragmentManager.beginTransaction()

@@ -1,5 +1,6 @@
 package com.example.financeapp.activity.enterance
 
+import android.app.Activity
 import android.content.Intent
 import android.os.Bundle
 import android.widget.Toast
@@ -103,7 +104,7 @@ class UserPreferencesActivity : AppCompatActivity(), CoroutineScope {
                             userRef.setValue(user)
                                 .addOnSuccessListener {
                                     Toast.makeText(this@UserPreferencesActivity, "Preferences saved successfully", Toast.LENGTH_SHORT).show()
-                                    val intent = Intent(this@UserPreferencesActivity, MenuActivity::class.java)
+                                    val intent = Intent(this@UserPreferencesActivity, ProfilePhotoActivity::class.java)
                                     startActivity(intent)
                                     finish() // Optionally: Finish the current activity to prevent user from going back
                                 }

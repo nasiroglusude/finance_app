@@ -1,6 +1,5 @@
-package com.example.financeapp.activity.menu.navigation
+package com.example.financeapp.activity.menu.navigation.settings
 
-import ProfileFragment
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
@@ -55,7 +54,7 @@ class ChangePasswordFragment : Fragment(),CoroutineScope {
                 changeUserPassword(currentPassword, oldPassword, newPasswordFirst, newPasswordSecond)
             }
 
-            switchToFragment(ProfileFragment())
+            switchToFragment(SettingsFragment())
 
         }
     }
@@ -115,7 +114,7 @@ class ChangePasswordFragment : Fragment(),CoroutineScope {
     private fun whenBackPressed() {
         requireActivity().onBackPressedDispatcher.addCallback(requireActivity(), object : OnBackPressedCallback(true){
             override fun handleOnBackPressed() {
-                switchToFragment((ProfileFragment()))
+                switchToFragment((SettingsFragment()))
             }
         })
     }

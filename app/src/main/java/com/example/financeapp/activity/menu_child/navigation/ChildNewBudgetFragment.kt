@@ -1,22 +1,28 @@
-package com.example.financeapp.activity.menu_child
+package com.example.financeapp.activity.menu_child.navigation
 
 import android.app.Dialog
-import android.content.Context
-import android.content.Intent
 import android.graphics.Color
+import android.graphics.PorterDuff
 import android.graphics.drawable.ColorDrawable
 import android.os.Bundle
+import android.view.LayoutInflater
 import android.view.View
+import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.ArrayAdapter
-import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import androidx.fragment.app.Fragment
+import com.example.financeapp.R
+import com.example.financeapp.activity.menu.MenuActivity
+import com.example.financeapp.activity.menu.navigation.HomeFragment
+import com.example.financeapp.activity.menu_child.ChildMenuActivity
 import com.example.financeapp.adapter.CategoryAdapter
 import com.example.financeapp.enums.Currency
-import com.example.financeapp.model.Budget
 import com.example.financeapp.model.Category
-import com.example.financeapp.databinding.ActivityMenuBinding
 import com.example.financeapp.databinding.DialogAddCategoryBinding
 import com.example.financeapp.databinding.FragmentNewBudgetBinding
+import com.example.financeapp.enums.Repetition
+import com.example.financeapp.model.Budget
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -32,29 +38,40 @@ import java.util.Date
 import java.util.Locale
 import kotlin.coroutines.CoroutineContext
 
-class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
+class ChildNewBudgetFragment : Fragment(), CoroutineScope {
     private lateinit var binding: FragmentNewBudgetBinding
     private lateinit var dialogBinding: DialogAddCategoryBinding
-    private lateinit var menuBinding: ActivityMenuBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var categoryAdapter: CategoryAdapter
+    private var childId: String? = null
 
     private val job = Job()
     override val coroutineContext: CoroutineContext
         get() = Dispatchers.IO + job
 
-    override fun onCreate(savedInstanceState: Bundle?) {
-        super.onCreate(savedInstanceState)
-        binding = FragmentNewBudgetBinding.inflate(layoutInflater)
-        menuBinding = ActivityMenuBinding.inflate(layoutInflater)
-        dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
-        setContentView(binding.root)
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
+        binding = FragmentNewBudgetBinding.inflate(inflater, container, false)
+        dialogBinding = DialogAddCategoryBinding.inflate(inflater)
+        return binding.root
+    }
 
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
+        categoryAdapter = CategoryAdapter(requireContext(), mutableListOf()) // Boş bir listeyle başlat
+        binding.categorySpinner.adapter = categoryAdapter // Adaptörü ayarla
+        childId = arguments?.getString("childId")
 
-        setListeners()
-        startAndUpdateCategorySpinner()
+        launch {
+            updateCategorySpinner()
+        }
+        setRepetitionSpinner()
         setCurrencySpinner()
+        setListeners()
     }
 
     private fun setListeners() {
@@ -66,9 +83,6 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
                 saveBudgetToFirebase()
             }
         }
-        binding.backButton.setOnClickListener {
-
-        }
         binding.categorySpinner.onItemSelectedListener =
             object : AdapterView.OnItemSelectedListener {
                 override fun onItemSelected(
@@ -78,12 +92,25 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
                     id: Long
                 ) {
                     val selectedCategory = categoryAdapter.getItem(position)
+                    // Get the Drawable from the View
                     val categoryColor = selectedCategory?.color
                     categoryColor?.let {
-                        binding.colorPreview.setBackgroundColor(Color.parseColor(it))
-                        val backgroundColor =
-                            (binding.colorPreview.background as? ColorDrawable)?.color
-                        println("Renk:" + backgroundColor)
+                        val circleDrawable = ContextCompat.getDrawable(
+                            requireContext(),
+                            R.drawable.circle_background
+                        )?.mutate()
+                        circleDrawable?.let { drawable ->
+                            // Change the color of the drawable
+                            val selectedColor =
+                                selectedCategory.color ?: "#000000" // Default color if null
+                            drawable.setColorFilter(
+                                Color.parseColor(selectedColor),
+                                PorterDuff.Mode.SRC_IN
+                            )
+
+                            // Set the modified drawable as the background of the View
+                            binding.colorPreview.background = drawable
+                        }
                     }
                 }
 
@@ -95,26 +122,26 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
 
     private fun setCurrencySpinner() {
         val spinnerAdapter = ArrayAdapter(
-            this,
+            requireContext(),
             android.R.layout.simple_spinner_item,
             Currency.entries.map { it.displayName }
         )
         spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
         binding.currencySpinner.adapter = spinnerAdapter
     }
-
-    private fun startAndUpdateCategorySpinner() {
-        // Kategori spinner adaptörünü başlat
-        categoryAdapter = CategoryAdapter(this, mutableListOf()) // Boş bir listeyle başlat
-        binding.categorySpinner.adapter = categoryAdapter // Adaptörü ayarla
-        launch {
-            updateCategorySpinner()
-        }
+    private fun setRepetitionSpinner() {
+        val spinnerAdapter = ArrayAdapter(
+            requireContext(),
+            android.R.layout.simple_spinner_item,
+            Repetition.entries.map { it.displayName }
+        )
+        spinnerAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
+        binding.repetitionSpinner.adapter = spinnerAdapter
     }
 
     //Spinnerin içeriğini firebasein categories tablosundan gelen kategorilerin title attributlerini atama
     private fun updateCategorySpinner() {
-        val childId = intent.getStringExtra("childId").toString()
+        val childId = arguments?.getString("childId").toString()
         childId.let { uid ->
             FirebaseDatabase.getInstance().reference.child("child").child(uid).child("categories")
                 .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -147,7 +174,7 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
 
     //Yeni kategori oluşturma dialoğunu kuran fonksiyon
     private fun showAddCategoryDialog() {
-        val dialog = Dialog(this)
+        val dialog = Dialog(requireContext())
         dialogBinding = DialogAddCategoryBinding.inflate(layoutInflater)
         dialog.setContentView(dialogBinding.root)
 
@@ -178,7 +205,7 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
 
     //Kategoriyi firebase'e kaydeden fonksiyon
     private fun saveCategoryToFirebase(categoryName: String, color: Int) {
-        val childId = intent.getStringExtra("childId").toString()
+        val childId = arguments?.getString("childId").toString()
         childId.let { uid ->
             val categoryId = FirebaseDatabase.getInstance().reference.child("child").child(uid)
                 .child("categories").push().key
@@ -201,48 +228,93 @@ class ChildNewBudgetActivity : AppCompatActivity(), CoroutineScope {
         }
     }
 
+
+
+    private fun fetchCategoryFromFirebase(
+        childId: String,
+        categoryId: String,
+        onSuccess: (Category) -> Unit,
+        onFailure: () -> Unit
+    ) {
+        val categoryRef = FirebaseDatabase.getInstance().reference
+            .child("child")
+            .child(childId)
+            .child("categories")
+            .child(categoryId)
+
+        categoryRef.addListenerForSingleValueEvent(object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                val category = dataSnapshot.getValue(Category::class.java)
+                if (category != null) {
+                    onSuccess(category)
+                } else {
+                    onFailure()
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                onFailure()
+            }
+        })
+    }
+
     //Bütçeyi firebase'e kaydeden fonksiyon
     private fun saveBudgetToFirebase() {
-        val childId = intent.getStringExtra("childId").toString()
-        childId.let { uid ->
-            val budgetId = FirebaseDatabase.getInstance().reference.child("child").child(uid)
+        childId?.let { uid ->
+            val budgetId = FirebaseDatabase.getInstance().reference.child("users").child(uid)
                 .child("budgets").push().key
             val title = binding.title.text.toString()
             val amount = binding.amount.text.toString()
-            val color = "#" + Integer.toHexString(
-                (binding.colorPreview.background as? ColorDrawable)?.color ?: Color.BLACK
-            )
-
             val currency = Currency.entries[binding.currencySpinner.selectedItemPosition].code
-            val radioButtonId = binding.budgetTypeRadioGroup.checkedRadioButtonId
-            val type = if (radioButtonId == binding.incomeRadioButton.id) "Income" else "Expense"
+            val repetition = Repetition.entries[binding.repetitionSpinner.selectedItemPosition].code
+            val typeRadioButtonId = binding.budgetTypeRadioGroup.checkedRadioButtonId
+            val type =
+                if (typeRadioButtonId == binding.incomeRadioButton.id) "Income" else "Expense"
             val selectedCategory = binding.categorySpinner.selectedItem as? Category
             val categoryName = selectedCategory?.title ?: ""
             val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+            if (selectedCategory != null) {
+                launch {
+                    fetchCategoryFromFirebase(uid, selectedCategory.id,
+                        onSuccess = { category ->
+                            val colorHexString = category.color // Move this inside the coroutine
 
-            val budget = Budget(
-                budgetId ?: "",
-                title,
-                amount,
-                color,
-                currency,
-                type,
-                categoryName,
-                currentDateString
-            )
+                            val budget = Budget(
+                                budgetId ?: "",
+                                title,
+                                amount,
+                                colorHexString,
+                                currency,
+                                type,
+                                repetition,
+                                categoryName,
+                                currentDateString
+                            )
 
-            FirebaseDatabase.getInstance().reference.child("child").child(uid)
-                .child("budgets").child(budgetId ?: "").setValue(budget)
-                .addOnCompleteListener { task ->
-                    if (task.isSuccessful) {
-                        val intent = Intent(this, ChildMenuActivity::class.java)
-                        intent.putExtra("childId", uid)
-                        startActivity(intent)
-                    } else {
-                        // Hata durumunu ele al
-                    }
+                            // Now use the context captured earlier
+                            FirebaseDatabase.getInstance().reference.child("child").child(uid)
+                                .child("budgets").child(budgetId ?: "").setValue(budget)
+                                .addOnCompleteListener { task ->
+                                    if (task.isSuccessful) {
+                                        switchToChildHomeFragment()
+                                    } else {
+                                        // Hata durumunu ele al
+                                    }
+                                }
+                        },
+                        onFailure = {
+                            // Failed to fetch category color
+                            // Handle the failure case
+                        }
+                    )
                 }
+            }
         }
     }
-
+    private fun switchToChildHomeFragment() {
+        requireActivity().supportFragmentManager.beginTransaction()
+            .replace(R.id.frame_layout, ChildHomeFragment())
+            .commit()
+        (requireActivity() as ChildMenuActivity).updateSelectedNavItem(R.id.home)
+    }
 }

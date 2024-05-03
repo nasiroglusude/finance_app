@@ -1,3 +1,6 @@
+package com.example.financeapp.activity.menu.navigation.child
+
+import KidsAdapter
 import android.app.AlertDialog
 import android.content.ContentValues.TAG
 import android.os.Bundle

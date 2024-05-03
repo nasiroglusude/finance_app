@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_marginTop="50dp"
+    android:layout_marginBottom="100dp"
+    android:layout_height="match_parent">
+
+    <RelativeLayout
+        android:id="@+id/actionBarLayout"
+        android:layout_width="350dp"
+        android:layout_centerHorizontal="true"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:orientation="horizontal">
+
+        <TextView
+            android:id="@+id/childName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="@string/settings"
+            android:fontFamily="@font/kanit"
+            android:textSize="30sp" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/mainCurrency"
+        android:layout_below="@id/actionBarLayout"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp"
+        android:layout_marginTop="30dp">
+
+    </RelativeLayout>
+
+
+
+    <RelativeLayout
+        android:id="@+id/changeLanguage"
+        android:layout_below="@id/mainCurrency"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:textSize="20sp"
+
+                android:text="@string/change_language">
+
+            </TextView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnLanguage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/select_language"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                app:iconGravity="end"
+                android:layout_marginBottom="10dp"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="4dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/userSettings"
+        android:layout_below="@id/changeLanguage"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:textSize="20sp"
+
+                android:text="@string/change_user_settings">
+            </TextView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnUserSetting"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/change_user_settings"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                app:iconGravity="end"
+                android:layout_marginBottom="10dp"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="4dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+
+    <RelativeLayout
+        android:id="@+id/passwordSettings"
+        android:layout_below="@id/userSettings"
+        android:layout_height="wrap_content"
+        android:layout_width="match_parent"
+        android:layout_marginStart="50dp"
+        android:layout_marginEnd="50dp"
+        android:layout_marginBottom="20dp">
+
+        <RelativeLayout
+            android:layout_height="wrap_content"
+            android:layout_width="match_parent"
+            android:orientation="horizontal">
+            <TextView
+                android:layout_height="wrap_content"
+                android:layout_width="wrap_content"
+                android:layout_centerVertical="true"
+                android:fontFamily="@font/kanit"
+                android:textSize="20sp"
+
+                android:text="@string/change_password">
+            </TextView>
+
+            <com.google.android.material.button.MaterialButton
+                android:id="@+id/btnChangePassword"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="@string/change_password"
+                android:layout_centerVertical="true"
+                android:layout_gravity="center_horizontal"
+                android:layout_alignParentTop="true"
+                android:layout_alignParentEnd="true"
+                android:textColor="@android:color/white"
+                app:iconGravity="end"
+                android:layout_marginBottom="10dp"
+                app:iconTint="@android:color/white"
+                app:cornerRadius="4dp"/>
+
+        </RelativeLayout>
+
+    </RelativeLayout>
+
+    <com.google.android.material.button.MaterialButton
+        android:id="@+id/btnLogout"
+        android:layout_width="match_parent"
+        android:layout_height="75dp"
+        android:layout_margin="20dp"
+        android:textSize="20sp"
+        android:text="@string/logout"
+        android:layout_alignParentBottom="true"
+        android:textColor="@android:color/white"/>
+
+</RelativeLayout>

@@ -92,5 +92,16 @@
     <string name="monthly">Aylık</string>
     <string name="repetition">Yenilenme</string>
     <string name="yearly">Yıllık</string>
+    <string name="setting">AYARLAR</string>
+    <string name="add_debt">Yeni Borç Ekle</string>
+    <string name="debt_owner">Alınan Kişi/Kurum</string>
+    <string name="debt_amount">Miktar</string>
+    <string name="pay_day">Son Ödeme Tarihi</string>
+    <string name="bills">Faturalar</string>
+    <string name="add_bill">Yeni Fatura Ekle</string>
+    <string name="bill_owner">Ödenecek Kişi/Kurum</string>
+    <string name="create_your_profile">Profilini Oluştur</string>
+    <string name="choose_photo">Fotoğrafını Seç</string>
+    <string name="choose">Seç</string>
 
 </resources>
