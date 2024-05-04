@@ -284,7 +284,9 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
                                 type,
                                 repetition,
                                 categoryName,
-                                currentDateString
+                                currentDateString,
+                                currentDateString,
+                                false
                             )
 
                             // Now use the context captured earlier

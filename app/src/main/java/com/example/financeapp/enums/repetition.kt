@@ -1,8 +1,7 @@
 package com.example.financeapp.enums
 
 enum class Repetition(val code: String, val displayName: String) {
-    NONE("none","No Repetition"),
-    DAILY("daily", "Daily"),
+    NONE("none","One Time"),
     MONTHLY("monthly", "Monthly"),
     ANNUAL("annual", "Annual");
 

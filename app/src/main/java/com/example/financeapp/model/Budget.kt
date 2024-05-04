@@ -9,9 +9,11 @@ data class Budget(
     val type: String = "",
     val repetition: String = "",
     val category: String = "",
-    var creationDate: String = ""
+    var creationDate: String = "",
+    var lastUpdate: String? = null,
+    val firstAddition: Boolean = false,
 ) {
     // Add a no-argument constructor
-    constructor() : this("", "", "", "", "", "","", "", "")
+    constructor() : this("", "", "", "", "", "","", "", "", "",)
 }
 

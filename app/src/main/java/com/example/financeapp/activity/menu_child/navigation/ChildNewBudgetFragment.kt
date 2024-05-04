@@ -273,6 +273,7 @@ class ChildNewBudgetFragment : Fragment(), CoroutineScope {
             val selectedCategory = binding.categorySpinner.selectedItem as? Category
             val categoryName = selectedCategory?.title ?: ""
             val currentDateString = SimpleDateFormat("dd/MM/yy", Locale.getDefault()).format(Date())
+
             if (selectedCategory != null) {
                 launch {
                     fetchCategoryFromFirebase(uid, selectedCategory.id,
@@ -288,7 +289,9 @@ class ChildNewBudgetFragment : Fragment(), CoroutineScope {
                                 type,
                                 repetition,
                                 categoryName,
-                                currentDateString
+                                currentDateString,
+                                currentDateString,
+                                false
                             )
 
                             // Now use the context captured earlier

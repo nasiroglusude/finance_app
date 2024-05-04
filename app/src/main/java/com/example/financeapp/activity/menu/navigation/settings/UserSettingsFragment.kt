@@ -44,6 +44,7 @@ class UserSettingsFragment : Fragment(), CoroutineScope {
         val view = binding.root
 
         parentActivity = activity as MenuActivity
+
         databaseReference = FirebaseDatabase.getInstance().reference
         auth = FirebaseAuth.getInstance()
 
@@ -160,6 +161,7 @@ class UserSettingsFragment : Fragment(), CoroutineScope {
                 "dateOfBirth" to dateOfBirth,
                 "email" to email
             )
+
             currentUserIndex.updateEmail(email)
                 .addOnCompleteListener { task ->
                     if (task.isSuccessful) {

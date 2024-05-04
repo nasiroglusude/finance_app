@@ -3,6 +3,7 @@ package com.example.financeapp.activity.menu.navigation
 import android.animation.AnimatorSet
 import android.animation.ObjectAnimator
 import android.annotation.SuppressLint
+import android.content.Context
 import android.content.Intent
 import android.graphics.BitmapFactory
 import android.graphics.Color
@@ -88,7 +89,7 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
 
         // Firebase'den bütçeleri al
         launch {
-            fetchUserPreferencesFromFirebase()
+            fetchUserPreferencesFromFirebase(requireContext())
         }
 
         // Butonları animasyonla
@@ -196,19 +197,21 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
         onMonthChanged.invoke(selectedMonthYear)
     }
 
-    private fun createDrawableFromUri(uri: Uri) {
+    private fun createDrawableFromUri(uri: Uri, context: Context) {
         try {
-            val inputStream = context?.contentResolver?.openInputStream(uri)
+            val inputStream = context.contentResolver?.openInputStream(uri)
             val bitmap = BitmapFactory.decodeStream(inputStream)
-            val drawable = BitmapDrawable(resources, bitmap)
+            val drawable = BitmapDrawable(context.resources, bitmap)
             // CircleImageView'nin src'sini oluşturulan drawable ile güncelleyin
-            binding.profilePhoto.setImageDrawable(drawable)
+            if (isAdded && view != null) {
+                binding.profilePhoto.setImageDrawable(drawable)
+            }
         } catch (e: IOException) {
             e.printStackTrace()
         }
     }
 
-    private fun fetchUserPreferencesFromFirebase() {
+    private fun fetchUserPreferencesFromFirebase(context: Context) {
         val currentUser = auth.currentUser
         currentUser?.let { user ->
             val userId = user.uid
@@ -225,7 +228,7 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
                             println("PROFİL"+profilePhoto)
                             profilePhoto?.let {
                                 // URI'yi kullanarak drawable oluşturmak için metodu çağırın
-                                createDrawableFromUri(Uri.parse(profilePhoto))
+                                createDrawableFromUri(Uri.parse(profilePhoto), context)
                             }
 
                             if (currency.isNotEmpty() && balance.isNotEmpty())
@@ -279,180 +282,292 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
         val userId = auth.currentUser?.uid
         userId?.let { uid ->
             val budgetRef = databaseReference.child(uid).child("budgets")
-                budgetRef.addListenerForSingleValueEvent(object : ValueEventListener {
-                    override fun onDataChange(snapshot: DataSnapshot) {
-                        val incomeLabels = mutableListOf<String>()
-                        val incomes = mutableListOf<Double>()
-                        val outcomeLabels = mutableListOf<String>()
-                        val outcomes = mutableListOf<Double>()
-                        val incomeColors = mutableListOf<String>()
-                        val outcomeColors = mutableListOf<String>()
+            budgetRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    val incomeLabels = mutableListOf<String>()
+                    val incomes = mutableListOf<Double>()
+                    val outcomeLabels = mutableListOf<String>()
+                    val outcomes = mutableListOf<Double>()
+                    val incomeColors = mutableListOf<String>()
+                    val outcomeColors = mutableListOf<String>()
 
-                        // Bütün bütçeleri döngüye al
-                        for (budgetSnapshot in snapshot.children) {
-                            val budgetKey = budgetSnapshot.key
-                            // Budget nesnesini al
-                            val budget = budgetSnapshot.getValue(Budget::class.java)
-                            budget?.let {
-                                // Get the creation date
-                                val amount = it.amount
-                                val repetition = it.repetition
-                                val creationDate = it.creationDate // String olarak alınan tarih
-                                val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault()) // String'i Date'e dönüştürmek için format belirle
-                                val date = dateFormat.parse(creationDate) ?: Date() // String tarihi Date'e dönüştür
-                                val calendar = Calendar.getInstance()
-                                calendar.time = date
-                                val creationMonth = calendar.get(Calendar.MONTH) // Ay ismini al
-                                val creationYear = calendar.get(Calendar.YEAR)
+                    val currentCalendar = Calendar.getInstance()
+                    val currentMonth = currentCalendar.get(Calendar.MONTH)
+                    val currentYear = currentCalendar.get(Calendar.YEAR)
 
-                                val currentCalendar = Calendar.getInstance()
-                                val currentMonth = currentCalendar.get(Calendar.MONTH) // Add 1 because Calendar months start from 0
-                                val currentYear = currentCalendar.get(Calendar.YEAR)
+                    snapshot.children.forEach { budgetSnapshot ->
+                        val budget = budgetSnapshot.getValue(Budget::class.java)
+                        budget?.let {
+                            val repetition = it.repetition
 
-                                if (repetition == "annual") {
-                                    val difference = currentYear - creationYear
-                                    val sameMonth = currentMonth == creationMonth
-
-                                    val updatedAmount = amount.toInt()+(amount.toInt()*difference)
-
-                                    if (budgetKey != null && difference > 0 && sameMonth) {
-                                        updateBudgetAmount(uid, budgetKey, updatedAmount)
-                                        updateUserBalance(uid, updatedAmount)
-                                    }
-
-                                    if (selectedMonth.toInt() == creationMonth && selectedYear.toInt() >= creationYear){
-                                        if (it.type == "Income") {
-                                            clearChart()
-                                            incomeLabels.add(it.title)
-                                            incomes.add(it.amount.toDouble())
-                                            incomeColors.add(it.color)
-
-                                        } else {
-                                            clearChart()
-                                            outcomeLabels.add(it.title)
-                                            outcomes.add(it.amount.toDouble())
-                                            outcomeColors.add(it.color)
-                                        }
-                                    }
+                            when (repetition) {
+                                "none" -> {
+                                    updateBudgetForNoneRepetition(uid, it, incomeLabels, incomes, outcomeLabels, outcomes, incomeColors, outcomeColors)
                                 }
-
-                                if (repetition == "monthly") {
-                                    if (selectedMonth.toInt() >= creationMonth && selectedYear.toInt() == creationYear){
-                                        if (it.type == "Income") {
-                                            clearChart()
-                                            incomeLabels.add(it.title)
-                                            incomes.add(it.amount.toDouble())
-                                            incomeColors.add(it.color)
-                                        } else {
-                                            clearChart()
-                                            outcomeLabels.add(it.title)
-                                            outcomes.add(it.amount.toDouble())
-                                            outcomeColors.add(it.color)
-                                        }
-                                    }
-                                    if (selectedYear.toInt() > creationYear){
-                                        if (it.type == "Income") {
-                                            clearChart()
-                                            incomeLabels.add(it.title)
-                                            incomes.add(it.amount.toDouble())
-                                            incomeColors.add(it.color)
-                                        } else {
-                                            clearChart()
-                                            outcomeLabels.add(it.title)
-                                            outcomes.add(it.amount.toDouble())
-                                            outcomeColors.add(it.color)
-                                        }
-                                    }
-
+                                "added" -> {
+                                    updateBudgetForAddedRepetition(it,incomeLabels, incomes, outcomeLabels, outcomes, incomeColors, outcomeColors, selectedMonth, selectedYear)
                                 }
-
-                                if (repetition == "none"){
-                                    updateUserBalance(uid, amount.toInt())
-                                    if (budgetKey != null){
-                                        updateBudgetRepetitionState(uid, budgetKey, "added")
-                                        if (it.type == "Income") {
-                                            clearChart()
-                                            incomeLabels.add(it.title)
-                                            incomes.add(it.amount.toDouble())
-                                            incomeColors.add(it.color)
-                                        } else {
-                                            clearChart()
-                                            outcomeLabels.add(it.title)
-                                            outcomes.add(it.amount.toDouble())
-                                            outcomeColors.add(it.color)
-                                        }
-                                    }
+                                "monthly" -> {
+                                    updateBudgetForMonthlyRepetition(uid, it, selectedMonth, selectedYear, currentMonth, currentYear, incomeLabels, incomes, outcomeLabels, outcomes, incomeColors, outcomeColors)
                                 }
-
-                                if (repetition == "added"){
-                                    if (selectedMonth.toInt() == creationMonth && selectedYear.toInt() == creationYear)
-                                    {
-                                        if (it.type == "Income") {
-                                            clearChart()
-                                            incomeLabels.add(it.title)
-                                            incomes.add(it.amount.toDouble())
-                                            incomeColors.add(it.color)
-                                        } else {
-                                            clearChart()
-                                            outcomeLabels.add(it.title)
-                                            outcomes.add(it.amount.toDouble())
-                                            outcomeColors.add(it.color)
-                                        }
-                                    }
+                                "annual" -> {
+                                    updateBudgetForAnnualRepetition(uid, it, selectedMonth, selectedYear, currentMonth, currentYear, incomeLabels, incomes, outcomeLabels, outcomes, incomeColors, outcomeColors)
                                 }
                             }
                         }
-
-                        // Eğer hiç veri yoksa, grafikleri temizle
-                        if (incomeLabels.isEmpty() && outcomeLabels.isEmpty()) {
-                            clearChart()
-                            showNoDataText()
-                        } else {
-                            // Veriler mevcutsa, pasta grafiği oluştur ve göster
-                            val pieChart = createPieChart()
-                            if (pieChart != null)
-                            {
-
-                            // Verileri pasta grafiğinde göster
-                            updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
-                            binding.chartContainer.addView(pieChart)
-
-                            // Set up button click listeners to switch between income and expense data
-                            binding.btnIncome.setOnClickListener {
-                                isIncomeSelected = true // Update the state variable
-                                animateButton(binding.btnIncome, true)
-                                animateButton(binding.btnOutcome, false)
-                                updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
-                            }
-
-                            binding.btnOutcome.setOnClickListener {
-                                isIncomeSelected = false // Update the state variable
-                                animateButton(binding.btnIncome, false)
-                                animateButton(binding.btnOutcome, true)
-                                updatePieChartDataSet(pieChart, outcomeLabels, outcomes, outcomeColors)
-                            }
-                            }
-
-                        }
                     }
 
-                    override fun onCancelled(error: DatabaseError) {
-                        // Hata durumunu ele al
-                    }
-                })
+                    // Display or update the chart based on the collected data
+                    updateChart(incomeLabels, incomes, outcomeLabels, outcomes, incomeColors, outcomeColors)
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    // Handle error
+                }
+            })
         }
     }
-    private fun updateBudgetAmount(userId: String, budgetKey: String, newAmount: Int) {
-        val budgetRef = databaseReference.child(userId).child("budgets").child(budgetKey)
-        val currentDate = getCurrentDate()
-        budgetRef.child("amount").setValue(newAmount.toString())
-        budgetRef.child("creationDate").setValue(currentDate)
+
+    private fun updateBudgetForNoneRepetition(
+        uid: String,
+        budget: Budget,
+        incomeLabels: MutableList<String>,
+        incomes: MutableList<Double>,
+        outcomeLabels: MutableList<String>,
+        outcomes: MutableList<Double>,
+        incomeColors: MutableList<String>,
+        outcomeColors: MutableList<String>
+    )
+    {
+        val positiveBalance = budget.amount
+        val negativeBalance = (positiveBalance.toInt()*-1).toString()
+        updateBudgetRepetitionState(uid,budget ,"added")
+        if (budget.type == "Income") {
+            updateUserBalance(uid, positiveBalance)
+            clearChart()
+            incomeLabels.add(budget.title)
+            incomes.add(budget.amount.toDouble())
+            incomeColors.add(budget.color)
+        } else {
+            updateUserBalance(uid, negativeBalance)
+            clearChart()
+            outcomeLabels.add(budget.title)
+            outcomes.add(budget.amount.toDouble())
+            outcomeColors.add(budget.color)
+        }
     }
 
-    private fun updateBudgetRepetitionState(userId: String, budgetKey: String, repetitionState: String) {
-        val budgetRef = databaseReference.child(userId).child("budgets").child(budgetKey)
-        budgetRef.child("repetition").setValue(repetitionState)
+    private fun updateBudgetForAddedRepetition(
+        budget: Budget,
+        incomeLabels: MutableList<String>,
+        incomes: MutableList<Double>,
+        outcomeLabels: MutableList<String>,
+        outcomes: MutableList<Double>,
+        incomeColors: MutableList<String>,
+        outcomeColors: MutableList<String>,
+        selectedMonth: String,
+        selectedYear: String
+    )
+    {
+        val creationMonth = getCreationMonth(budget)
+        val creationYear = getCreationYear(budget)
+        if (selectedMonth.toInt() == creationMonth && selectedYear.toInt() == creationYear)
+        {
+            if (budget.type == "Income") {
+                clearChart()
+                incomeLabels.add(budget.title)
+                incomes.add(budget.amount.toDouble())
+                incomeColors.add(budget.color)
+            } else {
+                clearChart()
+                outcomeLabels.add(budget.title)
+                outcomes.add(budget.amount.toDouble())
+                outcomeColors.add(budget.color)
+            }
+        }
+    }
 
+    private fun updateBudgetForMonthlyRepetition(
+        uid: String,
+        budget: Budget,
+        selectedMonth: String,
+        selectedYear: String,
+        currentMonth: Int,
+        currentYear: Int,
+        incomeLabels: MutableList<String>,
+        incomes: MutableList<Double>,
+        outcomeLabels: MutableList<String>,
+        outcomes: MutableList<Double>,
+        incomeColors: MutableList<String>,
+        outcomeColors: MutableList<String>
+    ) {
+        val creationMonth = getCreationMonth(budget)
+        val creationYear = getCreationYear(budget)
+
+        val lastUpdateMonth = getLastUpdateMonth(budget)
+        val lastUpdateYear = getLastUpdateYear(budget)
+
+        val isDueThisMonth = selectedMonth.toInt() == lastUpdateMonth && selectedYear.toInt() == lastUpdateYear
+
+        val positiveBalance = budget.amount
+        val negativeBalance = (positiveBalance.toInt()*-1).toString()
+
+        val balanceChange = if (budget.type == "Income") positiveBalance else negativeBalance
+
+        if (!budget.firstAddition && isDueThisMonth) {
+            updateUserBalance(uid, balanceChange)
+            updateBudgetAdditionState(uid, budget.id, true)
+        }
+
+        val monthsPassed = (currentYear - lastUpdateYear) * 12 + (currentMonth - lastUpdateMonth)
+        if (monthsPassed > 0 && (selectedMonth.toInt() >= creationMonth || selectedYear.toInt() > creationYear)) {
+            val updatedAmount = budget.amount.toInt() * monthsPassed
+            val updatedNegativeAmount = budget.amount.toInt() * monthsPassed *-1
+            val updatedBalanceChange = if (budget.type == "Income") updatedAmount else updatedNegativeAmount
+            updateUserBalance(uid, updatedBalanceChange.toString())
+            updateBudgetLastUpdate(uid, budget.id)
+        }
+
+        if (selectedMonth.toInt() >= creationMonth && selectedYear.toInt() == creationYear) {
+            if (budget.type == "Income") {
+                clearChart()
+                incomeLabels.add(budget.title)
+                incomes.add(budget.amount.toDouble())
+                incomeColors.add(budget.color)
+            } else {
+                clearChart()
+                outcomeLabels.add(budget.title)
+                outcomes.add(budget.amount.toDouble())
+                outcomeColors.add(budget.color)
+            }
+        }
+        if (selectedYear.toInt() > creationYear) {
+            if (budget.type == "Income") {
+                clearChart()
+                incomeLabels.add(budget.title)
+                incomes.add(budget.amount.toDouble())
+                incomeColors.add(budget.color)
+            } else {
+                clearChart()
+                outcomeLabels.add(budget.title)
+                outcomes.add(budget.amount.toDouble())
+                outcomeColors.add(budget.color)
+            }
+        }
+    }
+
+    private fun updateBudgetForAnnualRepetition(uid: String, budget: Budget, selectedMonth: String, selectedYear: String, currentMonth: Int, currentYear: Int, incomeLabels: MutableList<String>, incomes: MutableList<Double>, outcomeLabels: MutableList<String>, outcomes: MutableList<Double>, incomeColors: MutableList<String>, outcomeColors: MutableList<String>) {
+        val creationMonth = getCreationMonth(budget)
+        val creationYear = getCreationYear(budget)
+
+        val lastUpdateMonth = getLastUpdateMonth(budget)
+        val lastUpdateYear = getLastUpdateYear(budget)
+        val isDueThisYear = creationMonth == lastUpdateMonth && creationYear == lastUpdateYear
+
+        val positiveBalance = budget.amount
+        val negativeBalance = (positiveBalance.toInt()*-1).toString()
+
+        val balanceChange = if (budget.type == "Income") positiveBalance else negativeBalance
+        //First created
+        if (!budget.firstAddition && isDueThisYear) {
+            updateUserBalance(uid, balanceChange)
+            updateBudgetAdditionState(uid, budget.id, true)
+        }
+
+        //When some years passed
+        val yearsPassed = (currentYear-lastUpdateYear)
+        if (yearsPassed > 0 && selectedYear.toInt() > creationYear) {
+            val updatedAmount = budget.amount.toInt() * yearsPassed
+            val updatedNegativeAmount = budget.amount.toInt() * yearsPassed * -1
+            val updatedBalanceChange = if (budget.type == "Income") updatedAmount else updatedNegativeAmount
+
+            updateUserBalance(uid, updatedBalanceChange.toString())
+            updateBudgetLastUpdate(uid, budget.id)
+        }
+
+        //Just show all
+        if (selectedMonth.toInt() == creationMonth && selectedYear.toInt() >= creationYear) {
+            if (budget.type == "Income") {
+                incomeLabels.add(budget.title)
+                incomes.add(budget.amount.toDouble())
+                incomeColors.add(budget.color)
+            } else {
+                outcomeLabels.add(budget.title)
+                outcomes.add(budget.amount.toDouble())
+                outcomeColors.add(budget.color)
+            }
+        }
+    }
+
+    private fun updateBudgetAdditionState(childId: String, budgetKey: String, additionState: Boolean) {
+        val budgetRef = databaseReference.child(childId).child("budgets").child(budgetKey)
+        budgetRef.child("firstAddition").setValue(additionState)
+    }
+
+    private fun updateBudgetLastUpdate(childId: String, budgetKey: String) {
+        val budgetRef = databaseReference.child(childId).child("budgets").child(budgetKey)
+        val currentDate = getCurrentDate()
+        budgetRef.child("lastUpdate").setValue(currentDate)
+    }
+
+    private fun updateBudgetRepetitionState(childId: String,budget: Budget ,repetitionState: String) {
+        val budgetRef = databaseReference.child(childId).child("budgets").child(budget.id)
+        budgetRef.child("repetition").setValue(repetitionState)
+    }
+
+    private fun getCreationMonth(budget: Budget): Int {
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        val creationDate = dateFormat.parse(budget.creationDate) ?: Date()
+        val calendar = Calendar.getInstance().apply { time = creationDate }
+        return calendar.get(Calendar.MONTH)
+    }
+
+    private fun getCreationYear(budget: Budget): Int {
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        val creationDate = dateFormat.parse(budget.creationDate) ?: Date()
+        val calendar = Calendar.getInstance().apply { time = creationDate }
+        return calendar.get(Calendar.YEAR)
+    }
+
+    private fun getLastUpdateMonth(budget: Budget): Int {
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        val lastUpdateDate = budget.lastUpdate?.let { dateFormat.parse(it) } ?: Date()
+        val calendar = Calendar.getInstance().apply { time = lastUpdateDate }
+        return calendar.get(Calendar.MONTH)
+    }
+
+    private fun getLastUpdateYear(budget: Budget): Int {
+        val dateFormat = SimpleDateFormat("dd/MM/yy", Locale.getDefault())
+        val lastUpdateDate = budget.lastUpdate?.let { dateFormat.parse(it) } ?: Date()
+        val calendar = Calendar.getInstance().apply { time = lastUpdateDate }
+        return calendar.get(Calendar.YEAR)
+    }
+
+    private fun updateChart(incomeLabels: MutableList<String>, incomes: MutableList<Double>, outcomeLabels: MutableList<String>, outcomes: MutableList<Double>, incomeColors: MutableList<String>, outcomeColors: MutableList<String>) {
+        if (incomeLabels.isEmpty() && outcomeLabels.isEmpty()) {
+            clearChart()
+            showNoDataText()
+        } else {
+            val pieChart = createPieChart()
+            if (pieChart != null) {
+                updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
+                binding.chartContainer.addView(pieChart)
+
+                binding.btnIncome.setOnClickListener {
+                    isIncomeSelected = true
+                    animateButton(binding.btnIncome, true)
+                    animateButton(binding.btnOutcome, false)
+                    updatePieChartDataSet(pieChart, incomeLabels, incomes, incomeColors)
+                }
+
+                binding.btnOutcome.setOnClickListener {
+                    isIncomeSelected = false
+                    animateButton(binding.btnIncome, false)
+                    animateButton(binding.btnOutcome, true)
+                    updatePieChartDataSet(pieChart, outcomeLabels, outcomes, outcomeColors)
+                }
+            }
+        }
     }
 
     fun getCurrentDate(): String {
@@ -480,39 +595,19 @@ class HomeFragment : Fragment(), HorizontalCalendarAdapter.OnItemClickListener, 
             binding.chartContainer.addView(noDataText)
         }
     }
-    fun updateUserBalance(userId: String, additionalAmount: Int) {
-        val databaseReference = FirebaseDatabase.getInstance().reference.child("users")
-
-        // Kullanıcının verilerini çek
-        val userRef = databaseReference.child(userId)
-        userRef.addListenerForSingleValueEvent(object : ValueEventListener {
+    fun updateUserBalance(userId: String, amount: String) {
+        val budgetRef = databaseReference.child(userId)
+        budgetRef.child("balance").addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                if (dataSnapshot.exists()) {
-                    val userData = dataSnapshot.getValue(User::class.java)
-                    userData?.let { user ->
-                        // Kullanıcının mevcut bakiyesini al
-                        val currentBalance = user.balance.toInt()
-
-                        // Yeni bakiyeyi hesapla ve güncelle
-                        val newBalance = currentBalance + additionalAmount
-                        userRef.child("balance").setValue(newBalance.toString())
-                            .addOnSuccessListener {
-                                // Bakiye başarıyla güncellendi
-                                println("Bakiye başarıyla güncellendi. Yeni bakiye: $newBalance")
-                            }
-                            .addOnFailureListener { e ->
-                                // Hataları ele al
-                                println("Bakiye güncelleme başarısız oldu: ${e.message}")
-                            }
-                    }
-                } else {
-                    println("Kullanıcı verisi bulunamadı.")
+                val currentBalance = dataSnapshot.getValue(String::class.java)
+                if (currentBalance != null){
+                    val newBalance = currentBalance.toInt() + amount.toInt()
+                    budgetRef.child("balance").setValue(newBalance.toString())
                 }
             }
 
             override fun onCancelled(databaseError: DatabaseError) {
-                // Veritabanı hatasını ele al
-                println("Kullanıcı verisi alınırken hata oluştu: ${databaseError.message}")
+                // Handle error
             }
         })
     }
