@@ -141,12 +141,14 @@ class SettingsFragment : Fragment(), CoroutineScope{
         val displayMetrics = resources.displayMetrics
         requireContext().resources.updateConfiguration(configuration, displayMetrics)
 
-        // Reload or refresh the profile fragment
+
+        // Reload or refresh the profile fragment (SettingsFragment)
         val profileFragment = SettingsFragment()
         requireActivity().supportFragmentManager.beginTransaction()
             .replace(R.id.frame_layout, profileFragment)
             .commit()
     }
+
 
 
     private fun setCurrencySpinner(){

@@ -2,20 +2,20 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/bottom_nav_menu">
-    <item android:title="@string/home"
+    <item android:title=""
         android:id="@+id/home"
         android:icon="@drawable/home"/>
-    <item android:title="@string/kids"
+    <item android:title=""
         android:id="@+id/kids"
         android:icon="@drawable/kids"/>
     <item android:id="@+id/add"
         app:itemIconSize="500dp"
         android:icon="@drawable/baseline_add_circle_24"
         android:title="" />
-    <item android:title="@string/exchange"
+    <item android:title=""
         android:id="@+id/exchange"
         android:icon="@drawable/exchange"/>
-    <item android:title="@string/profile"
-        android:id="@+id/profile"
-        android:icon="@drawable/profile"/>
+    <item android:title=""
+        android:id="@+id/settings"
+        android:icon="@drawable/settings"/>
 </menu>

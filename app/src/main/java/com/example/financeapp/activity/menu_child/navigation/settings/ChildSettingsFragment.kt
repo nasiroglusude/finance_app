@@ -11,6 +11,8 @@ import androidx.appcompat.widget.PopupMenu
 import androidx.fragment.app.Fragment
 import com.example.financeapp.R
 import com.example.financeapp.activity.enterance.IntroActivity
+import com.example.financeapp.activity.menu.MenuActivity
+import com.example.financeapp.activity.menu.navigation.settings.SettingsFragment
 import com.example.financeapp.activity.menu_child.ChildMenuActivity
 import com.example.financeapp.activity.menu_child.navigation.ChildHomeFragment
 import com.example.financeapp.adapter.CurrencyAdapter
@@ -130,10 +132,10 @@ class ChildSettingsFragment : Fragment(), CoroutineScope{
         val displayMetrics = resources.displayMetrics
         requireContext().resources.updateConfiguration(configuration, displayMetrics)
 
-        // Reload or refresh the profile fragment
-        val childSettingsFragment = ChildSettingsFragment()
+        // Reload or refresh the profile fragment (SettingsFragment)
+        val profileFragment = ChildSettingsFragment()
         requireActivity().supportFragmentManager.beginTransaction()
-            .replace(R.id.frame_layout, childSettingsFragment)
+            .replace(R.id.frame_layout, profileFragment)
             .commit()
     }
 

@@ -69,7 +69,7 @@
     <string name="conversion_rate">Çevirme Oranı</string>
     <string name="convert">Çevir</string>
     <string name="exchange_amount">Çevirilecek Miktar</string>
-    <string name="settings">Ayarlar</string>
+    <string name="settings">AYARLAR</string>
     <string name="main_currency">Ana Para Birimi</string>
     <string name="dark_mode">Koyu Mod</string>
     <string name="change_language">Dil</string>
@@ -92,7 +92,7 @@
     <string name="monthly">Aylık</string>
     <string name="repetition">Yenilenme</string>
     <string name="yearly">Yıllık</string>
-    <string name="setting">AYARLAR</string>
+    <string name="setting">Ayarlar</string>
     <string name="add_debt">Yeni Borç Ekle</string>
     <string name="debt_owner">Alınan Kişi/Kurum</string>
     <string name="debt_amount">Miktar</string>
@@ -103,6 +103,7 @@
     <string name="create_your_profile">Profilini Oluştur</string>
     <string name="choose_photo">Fotoğrafını Seç</string>
     <string name="choose">Seç</string>
-
-
+    <string name="repetition_none">Tek Seferlik</string>
+    <string name="repetition_monthly">Aylık</string>
+    <string name="repetition_annual">Yıllık</string>
 </resources>

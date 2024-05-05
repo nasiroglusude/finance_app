@@ -7,37 +7,25 @@
     android:focusable="true"
     android:focusableInTouchMode="true"
     android:orientation="vertical">
-    <RelativeLayout
-        android:id="@+id/header"
+
+
+    <TextView
+        android:id="@+id/title"
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_width="match_parent"
-        android:layout_margin="20dp">
+        android:fontFamily="@font/kanit"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:layout_marginTop="10dp"
+        android:text="@string/currency_converter"
+        android:textSize="30sp"
+        android:textStyle="bold" />
 
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerVertical="true"
-            android:background="@android:color/transparent"
-            android:src="@drawable/baseline_keyboard_backspace_24" />
-            <TextView
-            android:id="@+id/title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:fontFamily="@font/kanit"
-            android:layout_centerHorizontal="true"
-            android:gravity="center"
-            android:text="@string/currency_converter"
-            android:textColor="#000000"
-            android:textSize="30sp"
-            android:textStyle="bold" />
-
-    </RelativeLayout>
 
     <androidx.cardview.widget.CardView
         android:id="@+id/card_view"
         android:layout_width="match_parent"
-        android:layout_below="@+id/header"
+        android:layout_below="@+id/title"
         android:layout_centerInParent="true"
         android:layout_height="600dp"
         android:layout_centerVertical="true"

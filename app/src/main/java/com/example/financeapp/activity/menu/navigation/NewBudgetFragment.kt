@@ -20,6 +20,7 @@ import com.example.financeapp.enums.Currency
 import com.example.financeapp.enums.Repetition
 import com.example.financeapp.model.Budget
 import com.example.financeapp.model.Category
+import com.example.financeapp.model.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -40,6 +41,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
     private lateinit var dialogBinding: DialogAddCategoryBinding
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var categoryAdapter: CategoryAdapter
+    private lateinit var currencySymbol: String
 
     private val job = Job()
     override val coroutineContext: CoroutineContext
@@ -57,11 +59,14 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         firebaseAuth = FirebaseAuth.getInstance()
+        currencySymbol = ""
 
 
         // Kategori spinner adaptörünü başlat
         categoryAdapter = CategoryAdapter(requireContext(), mutableListOf()) // Boş bir listeyle başlat
         binding.categorySpinner.adapter = categoryAdapter // Adaptörü ayarla
+
+        fetchUserPreferences()
         launch {
             updateCategorySpinner()
         }
@@ -168,6 +173,29 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
         }
     }
 
+    private fun fetchUserPreferences() {
+        val currentUser = firebaseAuth.currentUser?.uid
+        currentUser?.let { uid ->
+            val preferencesRef = FirebaseDatabase.getInstance().reference.child("users").child(uid)
+            preferencesRef.addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        val user = dataSnapshot.getValue(User::class.java)
+                        user?.let {
+                            currencySymbol = Currency.valueOf(it.currency).code
+                        }
+                    }
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // Error handling
+                }
+            })
+        } ?: run {
+            // User not signed in, handle this case
+        }
+    }
+
+
     //Yeni kategori oluşturma dialoğunu kuran fonksiyon
     private fun showAddCategoryDialog() {
         val dialog = Dialog(requireContext())
@@ -262,7 +290,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
                 .child("budgets").push().key
             val title = binding.title.text.toString()
             val amount = binding.amount.text.toString()
-            val currency = Currency.entries[binding.currencySpinner.selectedItemPosition].code
+            //val currency = Currency.entries[binding.currencySpinner.selectedItemPosition].code
             val repetition = Repetition.entries[binding.repetitionSpinner.selectedItemPosition].code
             val typeRadioButtonId = binding.budgetTypeRadioGroup.checkedRadioButtonId
             val type = if (typeRadioButtonId == binding.incomeRadioButton.id) "Income" else "Expense"
@@ -280,7 +308,7 @@ class NewBudgetFragment : Fragment(), CoroutineScope {
                                 title,
                                 amount,
                                 colorHexString,
-                                currency,
+                                currencySymbol,
                                 type,
                                 repetition,
                                 categoryName,

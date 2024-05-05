@@ -83,7 +83,7 @@ class MenuActivity: AppCompatActivity(), CoroutineScope {
                     replaceFragment(ExchangeFragment())
                     true
                 }
-                R.id.profile -> {
+                R.id.settings -> {
                     replaceFragment(SettingsFragment())
                     true
                 }

@@ -3,7 +3,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    android:padding="30dp">
+    android:layout_margin="10dp">
 
     <LinearLayout
         android:id="@+id/actionBarLayout"
@@ -13,13 +13,6 @@
         android:layout_alignParentTop="true"
         android:orientation="horizontal">
 
-        <ImageButton
-            android:id="@+id/back_button"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:background="@android:color/transparent"
-            android:src="@drawable/baseline_keyboard_backspace_24" />
-
         <TextView
             android:layout_width="0dp"
             android:layout_height="wrap_content"
@@ -27,15 +20,29 @@
             android:layout_weight="1"
             android:fontFamily="@font/kanit"
             android:gravity="center"
+            android:layout_marginBottom="20dp"
             android:text="@string/new_budget"
-            android:textSize="20sp" />
+            android:textSize="30sp" />
 
     </LinearLayout>
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/card_view"
+        android:layout_width="wrap_content"
+        android:layout_height="600dp"
+        android:layout_below="@+id/actionBarLayout"
+        android:layout_centerInParent="true"
+        android:layout_centerVertical="true"
+        android:clickable="true"
+        android:focusable="true"
+        app:cardCornerRadius="25dp">
+
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_below="@+id/actionBarLayout"
+        android:padding="30dp"
         android:orientation="vertical"
         android:paddingTop="30dp"
         android:paddingBottom="30dp">
@@ -194,21 +201,23 @@
             </RadioGroup>
 
 
+
         </RelativeLayout>
+        <Button
+            android:id="@+id/saveButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:layout_marginTop="50dp"
+            android:text="@string/save" />
         <!-- RadioGroup for budget type -->
 
 
 
     </LinearLayout>
-    <Button
-        android:id="@+id/saveButton"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentEnd="true"
-        android:layout_alignParentBottom="true"
-        android:layout_marginBottom="80dp"
-        android:layout_marginTop="20dp"
-        android:text="@string/save" />
+
+    </androidx.cardview.widget.CardView>
+
 
 
 </RelativeLayout>

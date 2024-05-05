@@ -69,7 +69,7 @@
     <string name="conversion_rate">Conversion Rate</string>
     <string name="convert">Convert</string>
     <string name="exchange_amount">Exchange Amount</string>
-    <string name="settings">Settings</string>
+    <string name="settings">SETTINGS</string>
     <string name="main_currency">Main Currency</string>
     <string name="dark_mode">Dark Mode</string>
     <string name="change_language">Language</string>
@@ -92,7 +92,7 @@
     <string name="monthly">Monthly</string>
     <string name="repetition">Repetition</string>
     <string name="yearly">Yearly</string>
-    <string name="setting">SETTINGS</string>
+    <string name="setting">Settings</string>
     <string name="add_debt">Add New Debt</string>
     <string name="debt_owner">Received Person/Institution</string>
     <string name="debt_amount">Amount</string>
@@ -103,4 +103,7 @@
     <string name="create_your_profile">Create your Profile</string>
     <string name="choose_photo">Choose a Photo</string>
     <string name="choose">Choose</string>
+    <string name="repetition_none">One Time</string>
+    <string name="repetition_monthly">Monthly</string>
+    <string name="repetition_annual">Annual</string>
 </resources>
